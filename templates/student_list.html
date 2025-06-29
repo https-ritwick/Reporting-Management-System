@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student List</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-900">
+
+  <!-- Header -->
+  <header class="bg-blue-100 border-b border-blue-300">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-4">
+        <img src="/static/img/GGSIU_logo.svg.png" alt="USAR Logo" class="h-14" />
+        <div>
+          <h1 class="text-xl font-semibold text-blue-900">University School of Automation & Robotics</h1>
+          <p class="text-sm text-gray-700">Guru Gobind Singh Indraprastha University, East Delhi Campus</p>
+        </div>
+      </div>
+      <img src="/static/img/new_logo_withoutbg.png" alt="New Logo" class="h-10" />
+    </div>
+  </header>
+
+  <!-- Navbar -->
+  <nav class="bg-blue-700 text-white">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex space-x-6 items-center">
+      <a href="/admin/dashboard" class="hover:underline font-semibold">Dashboard</a>
+      <a href="/admin/students" class="hover:underline">Student List</a>
+      <a href="/logout" class="ml-auto bg-red-600 hover:bg-red-500 px-3 py-1 rounded">Logout</a>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <div class="max-w-7xl mx-auto px-4 mt-6">
+    <div class="bg-white p-6 rounded shadow">
+      <h2 class="text-2xl font-semibold mb-6">Student List</h2>
+
+      <!-- Filters -->
+      <div class="flex flex-wrap gap-4 mb-6">
+        <input id="searchInput" type="text" placeholder="Search by name or application no." class="border px-3 py-2 rounded w-64" />
+        <select id="filterBranch" class="border px-3 py-2 rounded">
+          <option value="">All Branches</option>
+          {{range .BranchOptions}}<option value="{{.}}">{{.}}</option>{{end}}
+        </select>
+        <select id="filterBatch" class="border px-3 py-2 rounded">
+          <option value="">All Batches</option>
+          {{range .BatchOptions}}<option value="{{.}}">{{.}}</option>{{end}}
+        </select>
+        <select id="filterGroup" class="border px-3 py-2 rounded">
+          <option value="">All Groups</option>
+          {{range .GroupOptions}}<option value="{{.}}">{{.}}</option>{{end}}
+        </select>
+        <select id="filterStatus" class="border px-3 py-2 rounded">
+          <option value="">All Status</option>
+          {{range .StatusOptions}}<option value="{{.}}">{{.}}</option>{{end}}
+        </select>
+        <button onclick="applyFilters()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-500">Apply</button>
+      </div>
+
+      <!-- Table -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border border-gray-300">
+          <thead class="bg-gray-200 text-left">
+            <tr>
+              <th class="p-3">App. No</th>
+              <th class="p-3">Name</th>
+              <th class="p-3">Father</th>
+              <th class="p-3">Contact</th>
+              <th class="p-3">Email</th>
+              <th class="p-3">Branch</th>
+              <th class="p-3">Batch</th>
+              <th class="p-3">Group</th>
+              <th class="p-3">Status</th>
+              <th class="p-3 text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody id="studentTableBody">
+            {{range .Students}}
+            <tr class="border-t border-gray-200">
+                <td class="p-3 font-mono">{{.ApplicationNumber}}</td>
+
+                <!-- Name -->
+                <td class="p-2">
+                <input id="name-{{.ApplicationNumber}}" class="w-full border rounded px-2" value="{{.FullName}}" />
+                </td>
+
+                <!-- Father Name -->
+                <td class="p-2">
+                <input id="father-{{.ApplicationNumber}}" class="w-full border rounded px-2" value="{{.FatherName}}" />
+                </td>
+
+                <!-- Contact -->
+                <td class="p-2">
+                <input id="contact-{{.ApplicationNumber}}" class="w-full border rounded px-2" value="{{.ContactNumber}}" />
+                </td>
+
+                <!-- Email -->
+                <td class="p-2">
+                <input id="email-{{.ApplicationNumber}}" class="w-full border rounded px-2" value="{{.Email}}" />
+                </td>
+
+                <!-- Branch -->
+                <td class="p-2">
+                <select id="branch-{{.ApplicationNumber}}" class="w-full border rounded px-2">
+                    {{ $current := . }}
+                    {{range $.BranchOptions}}
+                    <option value="{{.}}" {{if eq . $current.Branch}}selected{{end}}>{{.}}</option>
+                    {{end}}
+                </select>
+                </td>
+
+                <!-- Batch -->
+                <td class="p-2">
+                <select id="batch-{{.ApplicationNumber}}" class="w-full border rounded px-2">
+                    {{range $.BatchOptions}}
+                    <option value="{{.}}" {{if eq . $current.Batch}}selected{{end}}>{{.}}</option>
+                    {{end}}
+                </select>
+                </td>
+
+                <!-- Group -->
+                <td class="p-2">
+                <select id="group-{{.ApplicationNumber}}" class="w-full border rounded px-2">
+                    {{range $.GroupOptions}}
+                    <option value="{{.}}" {{if eq . $current.Group}}selected{{end}}>{{.}}</option>
+                    {{end}}
+                </select>
+                </td>
+
+                <!-- Status -->
+                <td class="p-2">
+                <select id="status-{{.ApplicationNumber}}" class="w-full border rounded px-2">
+                    {{range $.StatusOptions}}
+                    <option value="{{.}}" {{if eq . $current.Status}}selected{{end}}>{{.}}</option>
+                    {{end}}
+                </select>
+                </td>
+
+                <!-- Save Button -->
+                <td class="p-2 text-center">
+                <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-1 rounded"
+                    onclick="saveRow(this, '{{.ApplicationNumber}}')">Save</button>
+                </td>
+            </tr>
+            {{end}}
+            </tbody>
+
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script>
+
+  function saveRow(button, appNo) {
+    const payload = {
+      application_number: appNo,
+      full_name: document.getElementById(`name-${appNo}`).value.trim(),
+      father_name: document.getElementById(`father-${appNo}`).value.trim(),
+      contact_number: document.getElementById(`contact-${appNo}`).value.trim(),
+      email: document.getElementById(`email-${appNo}`).value.trim(),
+      branch: document.getElementById(`branch-${appNo}`).value,
+      batch: document.getElementById(`batch-${appNo}`).value,
+      group: document.getElementById(`group-${appNo}`).value,
+      status: document.getElementById(`status-${appNo}`).value
+    };
+
+    fetch("/update-student", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    })
+    .then(res => {
+      if (res.ok) {
+        alert("✅ Student updated successfully!");
+      } else {
+        alert("❌ Failed to update student.");
+      }
+    })
+    .catch(err => {
+      console.error("Error:", err);
+      alert("❌ Something went wrong.");
+    });
+  }
+    function applyFilters() {
+      const url = new URL(window.location.href);
+      url.searchParams.set("search", document.getElementById("searchInput").value);
+      url.searchParams.set("branch", document.getElementById("filterBranch").value);
+      url.searchParams.set("batch", document.getElementById("filterBatch").value);
+      url.searchParams.set("group", document.getElementById("filterGroup").value);
+      url.searchParams.set("status", document.getElementById("filterStatus").value);
+      window.location.href = url.toString();
+    }
+  </script>
+
+</body>
+</html>

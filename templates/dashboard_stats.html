@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Student Cell Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+</head>
+<body class="bg-gray-100">
+
+  <!-- Header -->
+  <header class="bg-blue-100 border-b border-blue-300">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-4">
+        <img src="/static/img/GGSIU_logo.svg.png" alt="USAR Logo" class="h-14"/>
+        <div>
+          <h1 class="text-xl font-semibold text-blue-900">University School of Automation & Robotics</h1>
+          <p class="text-sm text-gray-700">Guru Gobind Singh Indraprastha University, East Delhi Campus</p>
+        </div>
+      </div>
+      <img src="/static/img/new_logo_withoutbg.png" alt="Right Logo" class="h-10"/>
+    </div>
+  </header>
+
+  <!-- Navbar -->
+  <nav class="bg-blue-700 text-white">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex space-x-6 items-center">
+      <a href="/admin/dashboard" class="hover:underline font-semibold">Dashboard</a>
+      <a href="/admin/students" class="hover:underline">Student List</a>
+      <a href="/logout" class="ml-auto bg-red-600 hover:bg-red-500 px-3 py-1 rounded">Logout</a>
+    </div>
+  </nav>
+
+  <!-- Dashboard Grid -->
+  <main class="max-w-7xl mx-auto py-10 px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    
+    <!-- Total Students -->
+    <div class="bg-white rounded-lg shadow text-center p-6">
+      <div class="text-2xl font-semibold text-blue-800 mb-2">🧑‍🎓 Total Students</div>
+      <div class="text-3xl font-bold text-gray-900">{{.Total}}</div>
+    </div>
+
+    <!-- Reported -->
+    <div class="bg-white rounded-lg shadow text-center p-6">
+      <div class="text-2xl font-semibold text-green-700 mb-2">✅ Reported</div>
+      <div class="text-3xl font-bold text-gray-900">{{.Reported}}</div>
+    </div>
+
+    <!-- Withdrawn -->
+    <div class="bg-white rounded-lg shadow text-center p-6">
+      <div class="text-2xl font-semibold text-red-600 mb-2">❌ Withdrawn</div>
+      <div class="text-3xl font-bold text-gray-900">{{.Withdrawn}}</div>
+    </div>
+
+    <!-- Branch-wise Count -->
+    <div class="bg-white rounded-lg shadow text-center p-6">
+      <div class="text-2xl font-semibold text-purple-700 mb-4">📊 Branch-wise Count</div>
+      <div class="space-y-2 text-left">
+        {{range $branch, $count := .BranchStats}}
+          <div><span class="font-semibold">{{$branch}}:</span> {{$count}}</div>
+        {{end}}
+      </div>
+    </div>
+
+  </main>
+
+</body>
+</html>

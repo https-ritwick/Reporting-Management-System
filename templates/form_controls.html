@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Form Controls</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 px-4 py-10">
+  <div class="max-w-3xl mx-auto bg-white shadow-md rounded p-8">
+    <h1 class="text-2xl font-bold text-blue-900 mb-4">🛠️ Admin Form Controls</h1>
+
+    {{if .Error}} <p class="text-red-500 mb-4">{{.Error}}</p> {{end}}
+
+    <form method="POST" class="space-y-6">
+
+      <div class="flex space-x-6">
+        <label><input type="checkbox" name="registration_form_open" {{if .RegistrationFormOpen}}checked{{end}}> Registration Form Open</label>
+        <label><input type="checkbox" name="upgrade_form_open" {{if .UpgradeFormOpen}}checked{{end}}> Upgrade Form Open</label>
+        <label><input type="checkbox" name="edit_form_open" {{if .EditFormOpen}}checked{{end}}> Edit Form Open</label>
+      </div>
+
+      <div>
+        <label class="block font-semibold">Academic Session</label>
+        <input type="text" name="academic_session" value="{{.AcademicSession}}" class="w-full border rounded px-3 py-2">
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label>Registration Deadline</label>
+          <input type="date" name="registration_deadline" value="{{.RegistrationDeadline}}" class="w-full border rounded px-3 py-2">
+        </div>
+        <div>
+          <label>Upgrade Deadline</label>
+          <input type="date" name="upgrade_deadline" value="{{.UpgradeDeadline}}" class="w-full border rounded px-3 py-2">
+        </div>
+      </div>
+
+      <div>
+        <label>Max Students per Group (0 = unlimited)</label>
+        <input type="number" name="max_students_per_group" value="{{.MaxStudentsPerGroup}}" class="w-full border rounded px-3 py-2">
+      </div>
+
+      <div>
+        <label>Public Notice</label>
+        <textarea name="public_notice" rows="4" class="w-full border rounded px-3 py-2">{{.PublicNotice}}</textarea>
+      </div>
+
+      <div>
+        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded">Save Settings</button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

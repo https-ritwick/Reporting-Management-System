@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Edit Student Details</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+</head>
+<body class="bg-gray-100 text-gray-900">
+
+<header class="bg-blue-100 border-b border-blue-300">
+  <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+    <div class="flex items-center space-x-4">
+      <img src="/static/img/GGSIU_logo.svg.png" alt="USAR Logo" class="h-14"/>
+      <div>
+        <h1 class="text-xl font-semibold text-blue-900">University School of Automation & Robotics</h1>
+        <p class="text-sm text-gray-700">Guru Gobind Singh Indraprastha University, East Delhi Campus</p>
+      </div>
+    </div>
+    <img src="/static/img/new_logo_withoutbg.png" alt="New Logo" class="h-10"/>
+  </div>
+</header>
+
+<nav class="bg-blue-700 text-white">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center space-x-4">
+    <a href="/" class="hover:underline">Home</a>
+    <a href="/notice" class="hover:underline">Public Notice</a>
+    <a href="/schedule" class="hover:underline">Programme Schedule</a>
+    <a href="https://ipu.ac.in" class="hover:underline" target="_blank">University Website</a>
+    <a href="/faq" class="hover:underline">FAQ</a>
+    <a href="/contact" class="hover:underline">Contact Us</a>
+  </div>
+</nav>
+
+<main class="max-w-4xl mx-auto py-10 px-6">
+  <h2 class="text-2xl font-bold text-center text-blue-900 mb-6">Edit Your Details</h2>
+
+  <!-- Step 1: Verification -->
+  {{ if eq .Step "verify" }}
+  <form method="POST" action="/edit?step=verify" class="bg-white shadow-lg rounded-lg p-8 space-y-5">
+    {{ if .Error }}
+    <p class="text-center text-red-600 font-semibold">{{ .Error }}</p>
+    {{ end }}
+
+    <div>
+      <label class="block font-semibold">GGSIPU Application Number:</label>
+      <input type="text" name="application_number" class="w-full border rounded px-3 py-2" required>
+    </div>
+
+    <div>
+      <label class="block font-semibold">Date of Birth:</label>
+      <input type="date" name="dob" class="w-full border rounded px-3 py-2" required>
+    </div>
+
+    <div>
+      <label class="block font-semibold">Branch:</label>
+      <select name="branch" class="w-full border rounded px-3 py-2" required>
+        <option value="AI-DS">AI-DS</option>
+        <option value="AI-ML">AI-ML</option>
+        <option value="IIOT">IIOT</option>
+        <option value="A&R">A&R</option>
+      </select>
+    </div>
+
+    <div class="text-center">
+      <button type="submit" class="bg-blue-800 text-white px-6 py-2 rounded hover:bg-blue-700 font-semibold">
+        Verify
+      </button>
+    </div>
+  </form>
+  {{ end }}
+
+  <!-- Step 2: Edit -->
+  {{ if eq .Step "edit" }}
+  <form method="POST" action="/edit?step=submit" class="bg-white shadow-lg rounded-lg p-8 space-y-5">
+
+    <!-- Hidden: app no for DB matching -->
+    <input type="hidden" name="application_number" value="{{ .Student.ApplicationNumber }}"/>
+
+    <div>
+      <label class="block font-semibold">Full Name:</label>
+      <input type="text" name="full_name" value="{{ .Student.FullName }}" class="w-full border rounded px-3 py-2" required />
+    </div>
+
+    <div>
+      <label class="block font-semibold">Father Name:</label>
+      <input type="text" name="father_name" value="{{ .Student.FatherName }}" class="w-full border rounded px-3 py-2" required />
+    </div>
+
+    <div>
+      <label class="block font-semibold">Application Number:</label>
+      <input type="text" value="{{ .Student.ApplicationNumber }}" class="w-full border rounded px-3 py-2 bg-gray-100" disabled />
+    </div>
+
+    <div>
+      <label class="block font-semibold">Date of Birth:</label>
+      <input type="text" value="{{ .Student.DOB }}" class="w-full border rounded px-3 py-2 bg-gray-100" disabled />
+    </div>
+
+    <div>
+      <label class="block font-semibold">Contact Number:</label>
+      <input type="text" name="contact_number" value="{{ .Student.ContactNumber }}" class="w-full border rounded px-3 py-2" required />
+    </div>
+
+    <div>
+      <label class="block font-semibold">Email:</label>
+      <input type="email" name="email" value="{{ .Student.Email }}" class="w-full border rounded px-3 py-2" required />
+    </div>
+
+    <div>
+      <label class="block font-semibold">Correspondence Address:</label>
+      <textarea name="correspondence_address" rows="3" class="w-full border rounded px-3 py-2">{{ .Student.CorrespondenceAddr }}</textarea>
+    </div>
+
+    <div>
+      <label class="block font-semibold">Permanent Address:</label>
+      <textarea name="permanent_address" rows="3" class="w-full border rounded px-3 py-2">{{ .Student.PermanentAddr }}</textarea>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="block font-semibold">Branch:</label>
+        <input type="text" value="{{ .Student.Branch }}" class="w-full border rounded px-3 py-2 bg-gray-100" disabled />
+      </div>
+      <div>
+        <label class="block font-semibold">Batch:</label>
+        <input type="text" value="{{ .Student.Batch }}" class="w-full border rounded px-3 py-2 bg-gray-100" disabled />
+      </div>
+      <div>
+        <label class="block font-semibold">Group:</label>
+        <input type="text" value="{{ .Student.Group }}" class="w-full border rounded px-3 py-2 bg-gray-100" disabled />
+      </div>
+      <div>
+        <label class="block font-semibold">Category:</label>
+        <select name="category" class="w-full border rounded px-3 py-2">
+          <option value="General" {{ if eq .Student.Category "General" }}selected{{ end }}>General</option>
+          <option value="OBC" {{ if eq .Student.Category "OBC" }}selected{{ end }}>OBC</option>
+          <option value="SC" {{ if eq .Student.Category "SC" }}selected{{ end }}>SC</option>
+          <option value="ST" {{ if eq .Student.Category "ST" }}selected{{ end }}>ST</option>
+          <option value="General-EWS" {{ if eq .Student.Category "General-EWS" }}selected{{ end }}>General-EWS</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block font-semibold">Sub Category:</label>
+        <select name="sub_category" class="w-full border rounded px-3 py-2">
+          <option value="None" {{ if eq .Student.SubCategory "None" }}selected{{ end }}>None</option>
+          <option value="Physically Handicapped" {{ if eq .Student.SubCategory "Physically Handicapped" }}selected{{ end }}>Physically Handicapped</option>
+          <option value="Defence Personnel" {{ if eq .Student.SubCategory "Defence Personnel" }}selected{{ end }}>Defence Personnel</option>
+          <option value="Wards of J&K Migrants" {{ if eq .Student.SubCategory "Wards of J&K Migrants" }}selected{{ end }}>Wards of J&K Migrants</option>
+          <option value="Single Girl Child Quota" {{ if eq .Student.SubCategory "Single Girl Child Quota" }}selected{{ end }}>Single Girl Child Quota</option>
+          <option value="Sports Quota" {{ if eq .Student.SubCategory "Sports Quota" }}selected{{ end }}>Sports Quota</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block font-semibold">Rank:</label>
+        <input type="number" name="rank" value="{{ .Student.Rank }}" class="w-full border rounded px-3 py-2" />
+      </div>
+
+      <div>
+        <label class="block font-semibold">Seat Quota:</label>
+        <select name="seat_quota" class="w-full border rounded px-3 py-2">
+          <option value="Delhi" {{ if eq .Student.SeatQuota "Delhi" }}selected{{ end }}>Delhi</option>
+          <option value="Outside Delhi" {{ if eq .Student.SeatQuota "Outside Delhi" }}selected{{ end }}>Outside Delhi</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="text-center pt-6">
+      <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 font-semibold">
+        Save Changes
+      </button>
+    </div>
+  </form>
+  {{ end }}
+</main>
+
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Branch Upgrade - USAR</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link href="/static/style.css" rel="stylesheet" />
+</head>
+<body class="bg-gray-100 text-gray-900">
+
+<!-- Header -->
+<header class="bg-blue-100 border-b border-blue-300">
+  <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+    <div class="flex items-center space-x-4">
+      <img src="/static/img/GGSIU_logo.svg.png" alt="USAR Logo" class="h-14"/>
+      <div>
+        <h1 class="text-xl font-semibold text-blue-900">University School of Automation & Robotics</h1>
+        <p class="text-sm text-gray-700">Guru Gobind Singh Indraprastha University, East Delhi Campus</p>
+      </div>
+    </div>
+    <img src="/static/img/new_logo_withoutbg.png" alt="New Logo" class="h-10"/>
+  </div>
+</header>
+
+<!-- Navigation -->
+<nav class="bg-blue-700 text-white">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center space-x-4">
+    <a href="/" class="hover:underline">Home</a>
+    <a href="/notice" class="hover:underline">Public Notice</a>
+    <a href="/schedule" class="hover:underline">Programme Schedule</a>
+    <a href="https://ipu.ac.in" class="hover:underline" target="_blank">University Website</a>
+    <a href="/faq" class="hover:underline">FAQ</a>
+    <a href="/contact" class="hover:underline">Contact Us</a>
+    <a href="/login" class="bg-white text-blue-700 px-3 py-1 rounded hover:bg-blue-100 ml-auto">Login</a>
+  </div>
+</nav>
+
+<!-- Main Section -->
+<main class="max-w-xl mx-auto py-10 px-6">
+  <h2 class="text-2xl font-bold text-center text-blue-900 mb-6">Branch Upgrade Form</h2>
+
+  {{ if eq .Step "verify" }}
+  <form method="POST" action="/upgrade?step=verify" class="bg-white shadow-lg rounded-lg p-8 space-y-5">
+    {{ if .Error }}
+    <p class="text-red-600 font-semibold text-center">{{ .Error }}</p>
+    {{ end }}
+
+    <div>
+      <label class="block font-semibold">GGSIPU Application Number:</label>
+      <input type="text" name="application_number" class="w-full border rounded px-3 py-2" required />
+    </div>
+
+    <div>
+      <label class="block font-semibold">Date of Birth:</label>
+      <input type="date" name="dob" class="w-full border rounded px-3 py-2" required />
+    </div>
+
+    <div>
+      <label class="block font-semibold">Previous Branch:</label>
+      <select name="prev_branch" class="w-full border rounded px-3 py-2" required>
+        <option value="">-- Select Branch --</option>
+        <option value="AI-DS">AI-DS</option>
+        <option value="AI-ML">AI-ML</option>
+        <option value="IIOT">IIOT</option>
+        <option value="A&R">A&R</option>
+      </select>
+    </div>
+
+    <div class="text-center pt-4">
+      <button type="submit" class="bg-blue-800 text-white px-6 py-2 rounded hover:bg-blue-700 font-semibold">
+        Verify Details
+      </button>
+    </div>
+  </form>
+  {{ end }}
+
+  {{ if eq .Step "upgrade" }}
+  <form method="POST" action="/upgrade?step=submit" class="bg-white shadow-lg rounded-lg p-8 space-y-5">
+    <input type="hidden" name="application_number" value="{{ .AppNumber }}" />
+    <input type="hidden" name="prev_branch" value="{{ .PrevBranch }}" />
+
+    <div>
+      <label class="block font-semibold">Select the Branch in which you are Upgraded:</label>
+      <select name="new_branch" class="w-full border rounded px-3 py-2" required>
+        <option value="">-- Select New Branch --</option>
+        {{ range .AllowedBranches }}
+        <option value="{{ . }}">{{ . }}</option>
+        {{ end }}
+      </select>
+    </div>
+
+    <div class="text-center pt-4">
+      <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 font-semibold">
+        Submit Upgrade
+      </button>
+    </div>
+  </form>
+  {{ end }}
+</main>
+
+<!-- Footer -->
+<footer class="bg-gray-900 text-white mt-16">
+  <div class="max-w-7xl mx-auto px-4 py-10 text-center text-sm">
+    © Content Provided and Maintained by USAR | Maintained by Student Cell, USAR
+  </div>
+</footer>
+
+<script>
+  document.querySelector("form").addEventListener("submit", function (e) {
+    const appInput = document.querySelector("input[name='application_number']");
+    if (appInput) {
+      const appNumber = appInput.value.trim();
+      const validApp = /^(131|128|127)\d{9}$/.test(appNumber);
+
+      if (!validApp) {
+        alert("Invalid GGSIPU Application Number! It must start with 131, 128, or 127 and be 12 digits.");
+        appInput.focus();
+        e.preventDefault();
+      }
+    }
+  });
+</script>
+
+</body>
+</html>

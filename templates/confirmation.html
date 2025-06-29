@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Confirmation Page</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link href="/static/style.css" rel="stylesheet" />
+</head>
+<body class="bg-gray-100 text-gray-900">
+
+<!-- Header -->
+<header class="bg-blue-100 border-b border-blue-300">
+  <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+    <div class="flex items-center space-x-4">
+      <img src="/static/img/GGSIU_logo.svg.png" alt="USAR Logo" class="h-14"/>
+      <div>
+        <h1 class="text-xl font-semibold text-blue-900">University School of Automation & Robotics</h1>
+        <p class="text-sm text-gray-700">Guru Gobind Singh Indraprastha University, East Delhi Campus</p>
+      </div>
+    </div>
+    <img src="/static/img/new_logo_withoutbg.png" alt="New Logo" class="h-10"/>
+  </div>
+</header>
+
+<!-- Navigation -->
+<nav class="bg-blue-700 text-white">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center space-x-4">
+    <a href="/" class="hover:underline">Home</a>
+    <a href="/notice" class="hover:underline">Public Notice</a>
+    <a href="/schedule" class="hover:underline">Programme Schedule</a>
+    <a href="https://ipu.ac.in" class="hover:underline" target="_blank">University Website</a>
+    <a href="/faq" class="hover:underline">FAQ</a>
+    <a href="/contact" class="hover:underline">Contact Us</a>
+    <a href="/login" class="bg-white text-blue-700 px-3 py-1 rounded hover:bg-blue-100 ml-auto">Login</a>
+  </div>
+</nav>
+
+<!-- Main Section -->
+<main class="max-w-4xl mx-auto py-10 px-6">
+  <h2 class="text-2xl font-bold text-center text-blue-900 mb-6">Registration Successful!</h2>
+  
+  <div class="bg-white shadow-lg rounded-lg p-6 space-y-4">
+    <p><strong>Name:</strong> {{.FullName}}</p>
+    <p><strong>Application Number:</strong> {{.ApplicationNumber}}</p>
+    <p><strong>Branch:</strong> {{.Branch}}</p>
+    <p><strong>Batch Allotted:</strong> <span class="text-green-700 font-semibold">{{.Batch}}</span></p>
+    <p><strong>Group Allotted:</strong> <span class="text-green-700 font-semibold">{{.Group}}</span></p>
+    <hr class="my-4">
+    <p class="text-sm text-gray-600 italic">Note: Keep this information safe. For corrections, contact the Student Cell.</p>
+  </div>
+
+  <div class="text-center pt-8">
+    <a href="/" class="bg-blue-800 text-white px-6 py-2 rounded hover:bg-blue-700 font-semibold">Back to Home</a>
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="bg-gray-900 text-white mt-16">
+  <div class="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div>
+      <h3 class="text-lg font-bold mb-2">USAR Student Management Portal</h3>
+      <p>Thank you for registering. If you face any issues, contact: <a href="mailto:usarmanagementportal@gmail.com" class="underline">usarmanagementportal@gmail.com</a></p>
+    </div>
+
+    <div>
+      <h3 class="text-lg font-bold mb-2">Quick Links</h3>
+      <ul class="space-y-1">
+        <li><a href="/" class="hover:underline">Home</a></li>
+        <li><a href="/notice" class="hover:underline">Public Notice</a></li>
+        <li><a href="/faq" class="hover:underline">FAQ</a></li>
+        <li><a href="/schedule" class="hover:underline">Programme Info</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="text-lg font-bold mb-2">Contact Us</h3>
+      <p>University School of Automation & Robotics<br/>
+         GGSIPU, East Delhi Campus<br/> Surajmal Vihar, Delhi-110032</p>
+    </div>
+  </div>
+
+  <div class="bg-gray-800 text-center text-sm py-3">
+    © Provided and Maintained by Student Cell, USAR
+  </div>
+</footer>
+</body>
+</html>
