@@ -38,25 +38,27 @@ func main() {
 	// Protected Admin Routes
 	http.HandleFunc("/admin/dashboard", middleware.AuthMiddleware(handlers.DashboardStatsHandler(db.Conn)))
 	http.HandleFunc("/admin/students", middleware.AuthMiddleware(handlers.StudentListHandler(db.Conn)))
-	http.HandleFunc("/admin/form-controls", middleware.AuthMiddleware(handlers.FormControlsHandler(db.Conn)))
+	//http.HandleFunc("/admin/form-controls", middleware.AuthMiddleware(handlers.FormControlsHandler(db.Conn)))
 	http.HandleFunc("/update-student", handlers.UpdateStudentHandler(db.Conn))
 
 	//Scan and Token System
 	// Route: QR Scan + Manual Form Page (served from /scan.html or index.html)
-	http.HandleFunc("/scan", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/scan", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "templates/scan.html")
-	})
+	}))
 
 	// API route to add student
-	http.HandleFunc("/add_student", handlers.AddStudentHandler(db.Conn))
+	http.HandleFunc("/add_student", middleware.AuthMiddleware(handlers.AddStudentHandler(db.Conn)))
 
 	// Route: Display token page (HTML rendered via template)
-	http.HandleFunc("/get_students", handlers.GetStudentsHandler(db.Conn))
-	http.HandleFunc("/update_student", handlers.UpdateStudentStatusHandler(db.Conn))
-	http.HandleFunc("/bulk_update_status", handlers.BulkUpdateStatusHandler(db.Conn))
-	http.HandleFunc("/update-status", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/get_students", middleware.AuthMiddleware(handlers.GetStudentsHandler(db.Conn)))
+	http.HandleFunc("/update_student", middleware.AuthMiddleware(handlers.UpdateStudentStatusHandler(db.Conn)))
+	http.HandleFunc("/bulk_update_status", middleware.AuthMiddleware(handlers.BulkUpdateStatusHandler(db.Conn)))
+	http.HandleFunc("/update-status", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "templates/update_status.html")
-	})
+	}))
+	http.HandleFunc("/view", handlers.ViewStudentsHandler(db.Conn))
+	http.HandleFunc("/export-students", handlers.ExportStudentsHandler(db.Conn))
 
 	// Static files (CSS, JS, images)
 	fs := http.FileServer(http.Dir("static"))

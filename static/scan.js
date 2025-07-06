@@ -8,12 +8,13 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderTable(list) {
     tableBody.innerHTML = "";
     list.forEach(student => {
+      const statusClass = student.status === "Reporting Slip Given" ? "text-yellow-600" : "text-green-700";
       const row = document.createElement("tr");
       row.innerHTML = `
         <td class="p-2">${student.application_no}</td>
         <td class="p-2">${student.candidate_name}</td>
         <td class="p-2">${student.branch}</td>
-        <td class="p-2 text-green-700 font-semibold">Present</td>
+        <td class="p-2 font-semibold ${statusClass}">${student.status}</td>
       `;
       tableBody.appendChild(row);
     });
@@ -41,11 +42,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const newStudent = {
       application_no: appNo,
       candidate_name: name,
-      branch: branch
+      branch: branch,
+      status: "Present"
     };
 
     try {
-      const res = await fetch("/add_student", {
+      const res = await fetch("/update_student", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newStudent)
@@ -53,8 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const result = await res.json();
       if (result.success) {
-        studentList.push(newStudent);
-        renderTable(studentList);
+        await loadStudents(); // reload list from DB
         document.getElementById("application_no").value = "";
         document.getElementById("candidate_name").value = "";
         document.getElementById("branch").value = "";
@@ -75,9 +76,16 @@ document.addEventListener("DOMContentLoaded", () => {
     renderTable(filtered);
   });
 
-  // Optional: Preload existing students (future enhancement)
-  // fetch("/all_students").then(res => res.json()).then(data => {
-  //   studentList = data;
-  //   renderTable(studentList);
-  // });
+  async function loadStudents() {
+    try {
+      const res = await fetch("/get_students");
+      const data = await res.json();
+      studentList = data;
+      renderTable(studentList);
+    } catch (err) {
+      console.error("Failed to load student list:", err);
+    }
+  }
+
+  loadStudents();
 });
