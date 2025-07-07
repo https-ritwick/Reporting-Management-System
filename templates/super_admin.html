@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - USAR SMP</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <!-- Header -->
+<header class="bg-blue-100 border-b border-blue-300">
+  <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+    <div class="flex items-center space-x-4">
+      <img src="/static/img/GGSIU_logo.svg.png" alt="USAR Logo" class="h-14"/>
+      <div>
+        <h1 class="text-xl font-semibold text-blue-900">University School of Automation & Robotics</h1>
+        <p class="text-sm text-gray-700">Guru Gobind Singh Indraprastha University, East Delhi Campus</p>
+      </div>
+    </div>
+    <img src="/static/img/new_logo_withoutbg.png" alt="New Logo" class="h-10"/>
+  </div>
+</header>
+  <header class="bg-white shadow p-4 flex justify-between items-center">
+    <h1 class="text-xl font-bold text-blue-900">Control Center</h1>
+  </header>
+
+  <main class="p-6 space-y-10">
+    <!-- Admin List -->
+    <section class="bg-white p-6 rounded shadow">
+      <h2 class="text-lg font-semibold mb-4">Manage Accounts</h2>
+      <table class="w-full table-auto border">
+        <thead>
+          <tr class="bg-blue-100">
+            <th class="p-2 border">ID</th>
+            <th class="p-2 border">Email</th>
+            <th class="p-2 border">Role</th>
+            <th class="p-2 border">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{range .}}
+          <tr class="text-center">
+            <td class="p-2 border">{{.ID}}</td>
+            <td class="p-2 border">{{.Email}}</td>
+            <td class="p-2 border">{{.Role}}</td>
+            <td class="p-2 border">
+              <a href="/superadmin/delete?id={{.ID}}" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Delete</a>
+            </td>
+          </tr>
+          {{end}}
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Create Admin Form -->
+    <section class="bg-white p-6 rounded shadow">
+      <h2 class="text-lg font-semibold mb-4">Create New Admin Account</h2>
+      <form method="POST" action="/superadmin/create" class="space-y-4">
+        <div>
+          <label class="block font-medium mb-1">Email:</label>
+          <input type="email" name="email" required class="border p-2 rounded w-full">
+        </div>
+        <div>
+          <label class="block font-medium mb-1">Password:</label>
+          <input type="password" name="password" required class="border p-2 rounded w-full">
+        </div>
+        <div>
+          <label class="block font-medium mb-1">Role:</label>
+          <select name="role" required class="border p-2 rounded w-full">
+            <option value="admin">Student Cell Admin</option>
+            <option value="attendance">Attendance Manager</option>
+            <option value="manager">Reporting Slip Manager</option>
+            <option value="manager">Super Admin</option>
+          </select>
+        </div>
+        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Create Account</button>
+      </form>
+    </section>
+
+    <!-- Export Section -->
+    <section class="bg-white p-6 rounded shadow">
+      <h2 class="text-lg font-semibold mb-4">Export Table</h2>
+      <form method="GET" action="/superadmin/export" class="flex items-center space-x-4">
+        <label for="table" class="font-medium">Select Table:</label>
+        <select name="table" id="table" class="border rounded p-2">
+          <option value="students">Students</option>
+          <option value="user_details">Login Table</option>
+          <option value="reporting_status">Reporting Status Tale</option>
+        </select>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Download CSV</button>
+      </form>
+    </section>
+
+    <!-- Reset Section -->
+    <section class="bg-white p-6 rounded shadow">
+      <h2 class="text-lg font-semibold mb-4 text-red-600">Reset Students Table</h2>
+      <form method="POST" action="/superadmin/reset" onsubmit="return confirmReset();">
+        <p class="mb-4 text-sm text-gray-700">Type <strong>SUMMIT</strong> in uppercase to confirm. This action is irreversible.</p>
+        <input type="text" name="confirm" class="border p-2 w-1/2" placeholder="Type SUMMIT here" required>
+        <br><br>
+        <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Confirm & Reset</button>
+      </form>
+    </section>
+
+    <section class="bg-white p-6 rounded shadow">
+      <h2 class="text-lg font-semibold mb-4 text-red-600">Reset Reporting Status Table</h2>
+      <form method="POST" action="/superadmin/reset-reporting" onsubmit="return confirmReset1();">
+        <p class="mb-4 text-sm text-gray-700">Type <strong>SUMMIT</strong> in uppercase to confirm. This action is irreversible.</p>
+        <input type="text" name="confirm-report" class="border p-2 w-1/2" placeholder="Type SUMMIT here" required>
+        <br><br>
+        <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Confirm & Reset</button>
+      </form>
+    </section>
+    
+  </main>
+    <footer class="bg-gray-900 text-white mt-16">
+    <div class="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div>
+        <h3 class="text-lg font-bold mb-2">USAR Student Management Portal (SMP)</h3>
+        <p>Empowering academic excellence through innovative digital solutions. Building technology that bridges students and faculty for better learning outcomes.</p>
+        <p class="mt-4">For any profile changes, support needs or technical issues please contact at <a href="mailto:usarmanagementportal@gmail.com" class="underline">usarmanagementportal@gmail.com</a></p>
+      </div>
+      <div>
+        <h3 class="text-lg font-bold mb-2">Quick Links</h3>
+        <ul class="space-y-1">
+          <li><a href="/" class="hover:underline">Home</a></li>
+          <li><a href="/form" class="hover:underline">Student Registration Form</a></li>
+          <li><a href="/about" class="hover:underline">About</a></li>
+          <li><a href="/faq" class="hover:underline">FAQ</a></li>
+          <li><a href="https://sites.google.com/view/ggsipuedc" class="hover:underline">GGSIPU EDC Website</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="text-lg font-bold mb-2">Contact Us</h3>
+        <p>University School of Automation & Robotics<br />
+          Guru Gobind Singh Indraprastha University <br />East Delhi Campus<br />
+          Surajmal Vihar, Delhi-110032</p>
+           <div class="flex space-x-4 mt-4">
+          <a href="https://www.instagram.com/ggsipuedc/" class="bg-white text-gray-900 hover:bg-blue-100 p-2 rounded-full" aria-label="Instagram">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M7.75 2h8.5C19.55 2 22 4.45 22 7.75v8.5C22 19.55 19.55 22 16.25 22h-8.5C4.45 22 2 19.55 2 16.25v-8.5C2 4.45 4.45 2 7.75 2zm0 2C5.68 4 4 5.68 4 7.75v8.5C4 18.32 5.68 20 7.75 20h8.5c2.07 0 3.75-1.68 3.75-3.75v-8.5C20 5.68 18.32 4 16.25 4h-8.5zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm4.25-2a.75.75 0 1 1 0 1.5.75.75 0 0 1 0-1.5z"/></svg>
+          </a>
+          <a href="https://x.com/GGSIPU_EDC" class="bg-white text-gray-900 hover:bg-blue-100 p-2 rounded-full" aria-label="X">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4v16h16V4zM5.5 5.5h13v13h-13v-13zm3.2 2.5 3.3 4.5-3.3 4.5h1.7l2.5-3.4 2.5 3.4h1.7l-3.3-4.5 3.3-4.5h-1.7l-2.5 3.4-2.5-3.4H8.7z"/></svg>
+          </a>
+          <a href="https://www.linkedin.com/in/ggsipuedc/" class="bg-white text-gray-900 hover:bg-blue-100 p-2 rounded-full" aria-label="LinkedIn">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452H17.4v-5.569c0-1.327-.024-3.037-1.85-3.037-1.85 0-2.134 1.445-2.134 2.939v5.667h-3.051V9h2.932v1.561h.042c.408-.775 1.407-1.591 2.896-1.591 3.096 0 3.668 2.038 3.668 4.689v6.793zM5.337 7.433c-.985 0-1.783-.798-1.783-1.783 0-.986.798-1.784 1.783-1.784.986 0 1.784.798 1.784 1.784 0 .985-.798 1.783-1.784 1.783zM6.814 20.452H3.861V9h2.953v11.452z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="bg-gray-800 text-center text-sm py-3">
+      © Designed and Developed by Software Development Cell and Student Council of USAR 
+    </div>
+  </footer>
+
+  <script>
+    function confirmReset() {
+      const input = document.querySelector('input[name="confirm"]').value;
+      if (input !== 'SUMMIT') {
+        alert('You must type SUMMIT to confirm.');
+        return false;
+      }
+      return confirm('Are you sure you want to reset the student table? This cannot be undone.');
+    }
+
+    function confirmReset1() {
+      const input = document.querySelector('input[name="confirm-report"]').value;
+      if (input !== 'SUMMIT') {
+        alert('You must type SUMMIT to confirm.');
+        return false;
+      }
+      return confirm('Are you sure you want to reset the Reporting Status table? This cannot be undone.');
+    }
+  </script>
+</body>
+</html>
