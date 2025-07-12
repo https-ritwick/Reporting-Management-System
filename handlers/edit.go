@@ -2,9 +2,11 @@ package handlers
 
 import (
 	"Batch/models"
+	"Batch/utils"
 	"database/sql"
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 	"time"
 )
@@ -126,7 +128,66 @@ func EditHandler(db *sql.DB) http.HandlerFunc {
 				return
 			}
 
+			// Fetch batch/group/branch for email after update
+			row := db.QueryRow("SELECT full_name, branch, batch, group_name FROM students WHERE application_number = ?", app)
+			var name, branch, batch, group string
+			err = row.Scan(&name, &branch, &batch, &group)
+			if err != nil {
+				log.Println("❌ Failed to fetch updated details:", err)
+				http.Redirect(w, r, "/confirmation?app="+app, http.StatusSeeOther)
+				return
+			}
+
+			html := fmt.Sprintf(`
+			<!DOCTYPE html>
+			<html>
+			<head>
+			<meta charset="UTF-8">
+			<title>Student Record Updation</title>
+			</head>
+			<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+			<table width="100%%" style="max-width: 600px; margin: auto; background: #fff; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+				<tr style="background-color: #003366; color: white;">
+				<td style="padding: 20px;">
+					<img src="https://upload.wikimedia.org/wikipedia/en/thumb/b/b8/GGSIU_logo.svg/1200px-GGSIU_logo.svg.png" alt="IPU Logo" width="60" style="float: left;">
+					<h2 style="text-align: center; margin: 0;">University School of Automation & Robotics</h2>
+					<p style="text-align: center; margin: 0;">Guru Gobind Singh Indraprastha University, East Delhi Campus</p>
+				</td>
+				</tr>
+				<tr>
+				<td style="padding: 20px;">
+					<h3>Dear %s,</h3>
+					<p>This is to inform you that your student details have been successfully updated in the system. Please find your updated academic details below:</p>
+					<table cellpadding="8" style="width: 100%%; border-collapse: collapse;">
+					<tr><td><strong>Application Number</strong></td><td>%s</td></tr>
+					<tr><td><strong>Branch</strong></td><td>%s</td></tr>
+					<tr><td><strong>Batch</strong></td><td>%s</td></tr>
+					<tr><td><strong>Group</strong></td><td>%s</td></tr>
+					</table>
+
+					<h4><strong> Note:</strong></h4>
+					<ul>
+					<li>You are allowed to edit your profile only once.</li>
+					<li>If any discrepancies are found, please reply to this email with the correct information.</li>
+					</ul>
+
+					<p style="margin-top: 30px;">Regards,<br><strong>USAR Student Cell</strong><br>GGSIPU</p>
+				</td>
+				</tr>
+			</table>
+			</body>
+			</html>
+			`, name, app, branch, batch, group)
+
+			err = utils.SendHTMLEmail(email, "📄 Student Profile Updated - USAR", html)
+			if err != nil {
+				log.Println("❌ Failed to send update email:", err)
+			} else {
+				log.Println("✅ Update email sent to:", email)
+			}
+
 			http.Redirect(w, r, "/confirmation?app="+app, http.StatusSeeOther)
+
 		}
 	}
 }

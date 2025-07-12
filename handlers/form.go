@@ -82,7 +82,6 @@ func SubmitHandler(db *sql.DB) http.HandlerFunc {
 			http.Error(w, fmt.Sprintf("Database error: %v", err), http.StatusInternalServerError)
 			return
 		}
-		http.Redirect(w, r, "/confirmation?app="+student.ApplicationNumber, http.StatusSeeOther)
 		html := fmt.Sprintf(`
 			<!DOCTYPE html>
 			<html>
@@ -115,7 +114,7 @@ func SubmitHandler(db *sql.DB) http.HandlerFunc {
 					<li>Please ensure all details are correct.</li>
 					<li>Please Note Down your Allotted Batch & Group for Future Reference</li>
 					<li>Students may fill the Hostel Admission Form available on the University Website.</li>
-					<li>If any discrepancies are found, Students are required to reply back to this mail, with detailed explanation and corrections, if any.</li>
+					<li>If any discrepancies are found, please reply to this email with the correct information.</li>
 					<li>Join the official WhatsApp group shared during orientation for updates.</li>
 					</ul>
 
@@ -134,5 +133,6 @@ func SubmitHandler(db *sql.DB) http.HandlerFunc {
 			log.Println("✅ Email sent to:", student.Email)
 		}
 		// Redirect to confirmation page
+		http.Redirect(w, r, "/confirmation?app="+student.ApplicationNumber, http.StatusSeeOther)
 	}
 }

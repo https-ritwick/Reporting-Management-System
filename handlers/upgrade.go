@@ -3,6 +3,7 @@ package handlers
 import (
 	"Batch/utils"
 	"database/sql"
+	"fmt"
 	"html/template"
 	"net/http"
 	"time"
@@ -85,15 +86,24 @@ func UpgradeHandler(db *sql.DB) http.HandlerFunc {
 			})
 			return
 		}
-
 		// Step 3: Perform upgrade
 		if step == "submit" {
 			app := r.FormValue("application_number")
 			newBranch := r.FormValue("new_branch")
 
+			// Fetch current student info
+			var fullName, email, prevBranch string
+			err := db.QueryRow("SELECT full_name, email, branch FROM students WHERE application_number = ?", app).
+				Scan(&fullName, &email, &prevBranch)
+			if err != nil {
+				http.Error(w, "Student not found", http.StatusNotFound)
+				return
+			}
+
 			batch, group := utils.AssignBatchAndGroup(db, newBranch)
 
-			_, err := db.Exec(`UPDATE students 
+			// Update DB with new branch, batch, group, and timestamp
+			_, err = db.Exec(`UPDATE students 
 				SET branch = ?, batch = ?, group_name = ?, last_upgrade_at = ? 
 				WHERE application_number = ?`,
 				newBranch, batch, group, time.Now(), app)
@@ -103,10 +113,62 @@ func UpgradeHandler(db *sql.DB) http.HandlerFunc {
 				return
 			}
 
+			// Email HTML content
+			html := fmt.Sprintf(`
+			<!DOCTYPE html>
+			<html>
+			<head>
+			<meta charset="UTF-8">
+			<title>Branch Upgrade Confirmation</title>
+			</head>
+			<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+			<table width="100%%" style="max-width: 600px; margin: auto; background: #fff; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+				<tr style="background-color: #003366; color: white;">
+				<td style="padding: 20px;">
+					<img src="https://upload.wikimedia.org/wikipedia/en/5/5a/Guru_Gobind_Singh_Indraprastha_University_Logo.png" width="60" style="float: left;">
+					<h2 style="text-align: center; margin: 0;">University School of Automation & Robotics</h2>
+					<p style="text-align: center; margin: 0;">Guru Gobind Singh Indraprastha University, East Delhi Campus</p>
+				</td>
+				</tr>
+				<tr>
+				<td style="padding: 20px;">
+					<h3>Dear %s,</h3>
+					<p>Congratulations! Your branch upgradation has been successfully processed. Please find your updated details below:</p>
+					<table cellpadding="8" style="width: 100%%; border-collapse: collapse;">
+					<tr><td><strong>Application Number</strong></td><td>%s</td></tr>
+					<tr><td><strong>Previous Branch</strong></td><td>%s</td></tr>
+					<tr><td><strong>New Upgraded Branch</strong></td><td>%s</td></tr>
+					<tr><td><strong>Batch</strong></td><td>%s</td></tr>
+					<tr><td><strong>Group</strong></td><td>%s</td></tr>
+					</table>
+
+					<h4> Instructions</h4>
+					<ul>
+					<li>Please verify the above information.</li>
+					<li>If any discrepancies are found, reply to this email with the correct details.</li>
+					<li>Your records have been successfully updated in the Student Management System.</li>
+					</ul>
+
+					<p style="margin-top: 30px;">Regards,<br><strong>USAR Student Cell</strong><br>GGSIPU</p>
+				</td>
+				</tr>
+			</table>
+			</body>
+			</html>
+			`, fullName, app, prevBranch, newBranch, batch, group)
+
+			// Send email
+			err = utils.SendHTMLEmail(email, " Branch Upgraded Successfully - USAR", html)
+			if err != nil {
+				println("❌ Failed to send email:", err.Error())
+			} else {
+				println("✅ Upgrade email sent to:", email)
+			}
+
+			// Redirect after sending email
 			http.Redirect(w, r, "/confirmation?app="+app, http.StatusSeeOther)
 			return
 		}
 
-		tmpl.Execute(w, UpgradeFormData{Step: "verify"})
 	}
 }
