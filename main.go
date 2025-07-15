@@ -52,8 +52,8 @@ func main() {
 	http.HandleFunc("/add_student", middleware.AuthMiddleware(handlers.AddStudentHandler(db.Conn)))
 	http.HandleFunc("/get_students", middleware.AuthMiddleware(handlers.GetStudentsHandler(db.Conn)))
 	http.HandleFunc("/update_student", middleware.AuthMiddleware(handlers.UpdateStudentStatusHandler(db.Conn)))
-	http.HandleFunc("/bulk_update_status", middleware.AuthMiddleware(handlers.BulkUpdateStatusHandler(db.Conn)))
-	http.HandleFunc("/update-status", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/reporting/bulk_update_status", middleware.AuthMiddleware(handlers.BulkUpdateStatusHandler(db.Conn)))
+	http.HandleFunc("/reporting/update-status", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "templates/update_status.html")
 	}))
 

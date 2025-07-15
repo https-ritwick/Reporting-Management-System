@@ -60,6 +60,10 @@ func LoginHandler(db *sql.DB) http.HandlerFunc {
 
 		if user.Role == "attendance" {
 			http.Redirect(w, r, "/scan", http.StatusSeeOther)
+		} else if user.Role == "manager" {
+			http.Redirect(w, r, "/reporting/update-status", http.StatusSeeOther)
+		} else if user.Role == "superadmin" {
+			http.Redirect(w, r, "/superadmin", http.StatusSeeOther)
 		} else {
 			http.Redirect(w, r, "/admin/dashboard", http.StatusSeeOther)
 		}
