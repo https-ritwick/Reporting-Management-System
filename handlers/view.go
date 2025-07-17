@@ -30,7 +30,7 @@ func ViewStudentsHandler(db *sql.DB) http.HandlerFunc {
 				contact_number, email, correspondence_address, permanent_address,
 				branch, lateral_entry, category, sub_category, exam_rank,
 				seat_quota, batch, group_name, status, has_edited
-				FROM students WHERE status = 'Reported'`
+				FROM students WHERE status = 'Reported' AND lateral_entry = 'No'`
 
 		args := []interface{}{}
 
