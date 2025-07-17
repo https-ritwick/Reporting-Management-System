@@ -73,6 +73,8 @@
               <th class="p-3">Group</th>
               <th class="p-3">Status</th>
               <th class="p-3 text-center">Action</th>
+              <th class="p-3 text-center">Resend</th>
+
             </tr>
           </thead>
           <tbody id="studentTableBody">
@@ -142,6 +144,12 @@
                 <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-1 rounded"
                     onclick="saveRow(this, '{{.ApplicationNumber}}')">Save</button>
                 </td>
+                <td class="p-2 text-center">
+                  <button class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded resend-btn"
+                          data-app="{{.ApplicationNumber}}">
+                     Resend
+                  </button>
+                </td>
             </tr>
             {{end}}
             </tbody>
@@ -195,7 +203,29 @@
       url.searchParams.set("status", document.getElementById("filterStatus").value);
       window.location.href = url.toString();
     }
-  </script>
+    
+  // Attach listeners for resend buttons
+  document.querySelectorAll(".resend-btn").forEach(button => {
+    button.addEventListener("click", () => {
+      const appNo = button.getAttribute("data-app");
 
+      if (confirm(`Are you sure you want to resend the confirmation email to Application No: ${appNo}?`)) {
+        fetch("/resend-email", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: "application_number=" + encodeURIComponent(appNo)
+        })
+        .then(res => res.text())
+        .then(msg => alert(msg))
+        .catch(err => {
+          console.error("Email Error:", err);
+          alert("❌ Failed to send email.");
+        });
+      }
+    });
+  });
+</script>
 </body>
 </html>

@@ -1,8 +1,10 @@
 package handlers
 
 import (
+	"Batch/utils"
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -196,5 +198,54 @@ func UpdateStudentHandler(db *sql.DB) http.HandlerFunc {
 		}
 
 		w.WriteHeader(http.StatusOK)
+	}
+}
+func ResendEmailHandler(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+			return
+		}
+
+		appNo := r.FormValue("application_number")
+		if appNo == "" {
+			http.Error(w, "Application number is required", http.StatusBadRequest)
+			return
+		}
+
+		var email, name, batch, group string
+		query := `SELECT email, full_name, batch, group_name FROM students WHERE application_number = ?`
+		err := db.QueryRow(query, appNo).Scan(&email, &name, &batch, &group)
+		if err != nil {
+			http.Error(w, "Student not found", http.StatusNotFound)
+			return
+		}
+
+		subject := " Your Batch and Group Allotment | USAR"
+
+		htmlBody := fmt.Sprintf(`
+			<html>
+			<body style="font-family:Arial,sans-serif;">
+				<p>Dear <strong>%s</strong>,</p>
+				<p>We are pleased to inform you that your <strong>Batch and Group</strong> have been successfully allotted as follows:</p>
+				<ul>
+					<li><strong>Batch:</strong> %s</li>
+					<li><strong>Group:</strong> %s</li>
+				</ul>
+				<p>Please keep this information safe for future reference.</p>
+				<br/>
+				<p>Regards,<br/><strong>Student Cell</strong><br/>University School of Automation & Robotics, GGSIPU</p>
+			</body>
+			</html>
+		`, name, batch, group)
+
+		err = utils.SendHTMLEmail(email, subject, htmlBody)
+		if err != nil {
+			http.Error(w, "❌ Failed to send email", http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("✅ Email sent successfully to " + email))
 	}
 }

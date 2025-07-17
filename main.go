@@ -39,11 +39,12 @@ func main() {
 	http.HandleFunc("/export-students", handlers.ExportStudentsHandler(db.Conn))
 
 	// ---------------------------
-	// Admin Routes (Protected)
+	// Student Cell Dashboard Routes (Protected)
 	// ---------------------------
 	http.HandleFunc("/admin/dashboard", middleware.AuthMiddleware(handlers.DashboardStatsHandler(db.Conn)))
 	http.HandleFunc("/admin/students", middleware.AuthMiddleware(handlers.StudentListHandler(db.Conn)))
 	http.HandleFunc("/update-student", middleware.AuthMiddleware(handlers.UpdateStudentHandler(db.Conn)))
+	http.HandleFunc("/resend-email", middleware.AuthMiddleware(handlers.ResendEmailHandler(db.Conn)))
 
 	// Scan & Token System
 	http.HandleFunc("/scan", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
