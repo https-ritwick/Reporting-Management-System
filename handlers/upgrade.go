@@ -86,6 +86,7 @@ func UpgradeHandler(db *sql.DB) http.HandlerFunc {
 			})
 			return
 		}
+
 		// Step 3: Perform upgrade
 		if step == "submit" {
 			app := r.FormValue("application_number")
@@ -93,16 +94,25 @@ func UpgradeHandler(db *sql.DB) http.HandlerFunc {
 
 			// Fetch current student info
 			var fullName, email, prevBranch string
-			err := db.QueryRow("SELECT full_name, email, branch FROM students WHERE application_number = ?", app).
-				Scan(&fullName, &email, &prevBranch)
+			var lateralInt int
+			err := db.QueryRow("SELECT full_name, email, branch, lateral_entry FROM students WHERE application_number = ?", app).
+				Scan(&fullName, &email, &prevBranch, &lateralInt)
 			if err != nil {
 				http.Error(w, "Student not found", http.StatusNotFound)
 				return
 			}
 
-			batch, group := utils.AssignBatchAndGroup(db, newBranch)
+			// Allot new batch & group based on LE status
+			var batch, group string
+			if lateralInt == 1 {
+				batch = ""
+				group = ""
+			} else {
+				// Regular student
+				batch, group = utils.AssignBatchAndGroup(db, newBranch)
+			}
 
-			// Update DB with new branch, batch, group, and timestamp
+			// Update DB
 			_, err = db.Exec(`UPDATE students 
 				SET branch = ?, batch = ?, group_name = ?, last_upgrade_at = ? 
 				WHERE application_number = ?`,
@@ -111,6 +121,14 @@ func UpgradeHandler(db *sql.DB) http.HandlerFunc {
 			if err != nil {
 				http.Error(w, "Database update failed", http.StatusInternalServerError)
 				return
+			}
+
+			// Group display message
+			groupDisplay := group
+			batchDisplay := batch
+			if lateralInt == 1 {
+				batchDisplay = "Not Applicable (LE Student)"
+				groupDisplay = "Not Applicable (LE Student)"
 			}
 
 			// Email HTML content
@@ -142,7 +160,7 @@ func UpgradeHandler(db *sql.DB) http.HandlerFunc {
 					<tr><td><strong>Group</strong></td><td>%s</td></tr>
 					</table>
 
-					<h4> Instructions</h4>
+					<h4>Instructions</h4>
 					<ul>
 					<li>Please verify the above information.</li>
 					<li>If any discrepancies are found, reply to this email with the correct details.</li>
@@ -155,20 +173,18 @@ func UpgradeHandler(db *sql.DB) http.HandlerFunc {
 			</table>
 			</body>
 			</html>
-			`, fullName, app, prevBranch, newBranch, batch, group)
+			`, fullName, app, prevBranch, newBranch, batchDisplay, groupDisplay)
 
 			// Send email
-			err = utils.SendHTMLEmail(email, " Branch Upgraded Successfully - USAR", html)
+			err = utils.SendHTMLEmail(email, "Branch Upgraded Successfully - USAR", html)
 			if err != nil {
-				println("❌ Failed to send email:", err.Error())
+				fmt.Println("❌ Failed to send email:", err.Error())
 			} else {
-				println("✅ Upgrade email sent to:", email)
+				fmt.Println("✅ Upgrade email sent to:", email)
 			}
 
-			// Redirect after sending email
 			http.Redirect(w, r, "/confirmation?app="+app, http.StatusSeeOther)
 			return
 		}
-
 	}
 }

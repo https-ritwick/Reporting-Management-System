@@ -60,9 +60,13 @@ func SubmitHandler(db *sql.DB) http.HandlerFunc {
 		} else {
 			lateralInt = 0
 		}
-
-		// Batch & group allocation logic
-		student.Batch, student.Group = utils.AssignBatchAndGroup(db, student.Branch)
+		if student.LateralEntry == "Yes" {
+			// Alternate batch logic for LE (based on existing data)
+			student.Batch = ""
+			student.Group = ""
+		} else {
+			student.Batch, student.Group = utils.AssignBatchAndGroup(db, student.Branch)
+		}
 
 		// Final insert query using double quotes and escaped backticked column `rank`
 		insertQuery := "INSERT INTO students (" +
@@ -81,6 +85,12 @@ func SubmitHandler(db *sql.DB) http.HandlerFunc {
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Database error: %v", err), http.StatusInternalServerError)
 			return
+		}
+		groupDisplay := student.Group
+		batchDisplay := student.Batch
+		if lateralInt == 1 {
+			batchDisplay = "Not Applicable (LE Student)"
+			groupDisplay = "Not Applicable (LE Student)"
 		}
 		html := fmt.Sprintf(`
 			<!DOCTYPE html>
@@ -124,9 +134,9 @@ func SubmitHandler(db *sql.DB) http.HandlerFunc {
 			</table>S
 			</body>
 			</html>
-		`, student.FullName, student.ApplicationNumber, student.Branch, student.Batch, student.Group)
+		`, student.FullName, student.ApplicationNumber, student.Branch, batchDisplay, groupDisplay)
 
-		err = utils.SendHTMLEmail(student.Email, "🎓 Registration Confirmation - USAR", html)
+		err = utils.SendHTMLEmail(student.Email, "Registration Confirmation - USAR", html)
 		if err != nil {
 			log.Println("❌ Failed to send registration email:", err)
 		} else {
