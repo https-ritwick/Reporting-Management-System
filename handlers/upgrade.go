@@ -108,7 +108,6 @@ func UpgradeHandler(db *sql.DB) http.HandlerFunc {
 				batch = ""
 				group = ""
 			} else {
-				// Regular student
 				batch, group = utils.AssignBatchAndGroup(db, newBranch)
 			}
 

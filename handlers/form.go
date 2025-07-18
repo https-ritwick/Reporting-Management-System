@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -52,34 +53,51 @@ func SubmitHandler(db *sql.DB) http.HandlerFunc {
 			SubCategory:        r.FormValue("sub_category"),
 			Rank:               rank,
 			SeatQuota:          r.FormValue("seat_quota"),
+			FeeMode:            r.FormValue("fee_mode"),
+			FeeReference:       r.FormValue("fee_reference"),
 			Status:             "Reported",
 		}
 		var lateralInt int
-		if student.LateralEntry == "Yes" {
-			lateralInt = 1
-		} else {
-			lateralInt = 0
-		}
-		if student.LateralEntry == "Yes" {
-			// Alternate batch logic for LE (based on existing data)
+		isLE := strings.EqualFold(student.LateralEntry, "Yes")
+		if isLE {
+			//lateralInt := 1
 			student.Batch = ""
 			student.Group = ""
 		} else {
+			//lateralInt := 0
 			student.Batch, student.Group = utils.AssignBatchAndGroup(db, student.Branch)
 		}
+		log.Printf("Final Batch: %s | Final Group: %s | IsLE: %v\n", student.Batch, student.Group, isLE)
 
 		// Final insert query using double quotes and escaped backticked column `rank`
 		insertQuery := "INSERT INTO students (" +
-			"full_name, application_number, father_name, dob, contact_number, " +
+			"application_number, full_name, father_name, dob, contact_number, " +
 			"email, correspondence_address, permanent_address, branch, lateral_entry, " +
-			"category, sub_category, exam_rank, seat_quota, batch, group_name, status" +
-			") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+			"category, sub_category, exam_rank, seat_quota, batch, group_name, status, " +
+			"has_edited, fee_mode, fee_reference" +
+			") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 
 		_, err = db.Exec(insertQuery,
-			student.FullName, student.ApplicationNumber, student.FatherName, student.DOB,
-			student.ContactNumber, student.Email, student.CorrespondenceAddr, student.PermanentAddr,
-			student.Branch, lateralInt, student.Category, student.SubCategory,
-			student.Rank, student.SeatQuota, student.Batch, student.Group, student.Status,
+			student.ApplicationNumber,
+			student.FullName,
+			student.FatherName,
+			student.DOB,
+			student.ContactNumber,
+			student.Email,
+			student.CorrespondenceAddr,
+			student.PermanentAddr,
+			student.Branch,
+			lateralInt,
+			student.Category,
+			student.SubCategory,
+			student.Rank,
+			student.SeatQuota,
+			student.Batch,
+			student.Group,
+			student.Status,
+			0, // has_edited
+			student.FeeMode,
+			student.FeeReference,
 		)
 
 		if err != nil {
@@ -121,11 +139,14 @@ func SubmitHandler(db *sql.DB) http.HandlerFunc {
 
 					<h4><strong> Important Instructions </strong></h4>
 					<ul>
+					<li><a class="underline"href="https://docs.google.com/document/d/1B3zj4LK8akjsmjB_nNKSfM9_Tmv4j_D_00z0W6nx14k/edit?usp=sharing" target="_blank">
+      				Click Here to Read Important Instructions for Newly Admitted Candidates.
+      				</a></li>
 					<li>Please ensure all details are correct.</li>
 					<li>Please Note Down your Allotted Batch & Group for Future Reference</li>
-					<li>Students may fill the Hostel Admission Form available on the University Website.</li>
+					<li>Students may fill out the Hostel Admission Form available on the University Website.</li>
 					<li>If any discrepancies are found, please reply to this email with the correct information.</li>
-					<li>Join the official WhatsApp group shared during orientation for updates.</li>
+					<li>Join the official WhatsApp Group.</li>
 					</ul>
 
 					<p style="margin-top: 30px;">Regards,<br><strong>USAR Student Cell</strong><br>GGSIPU</p>

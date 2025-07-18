@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="static/img/Logo/GGSIU_logo.svg.png" />
   <style>
     body { font-family: 'Public Sans', sans-serif; }
     label::after { content: " *"; color: red; }
@@ -17,13 +18,13 @@
 <header class="bg-white shadow-md border-b border-blue-200">
   <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
     <div class="flex items-center space-x-4">
-      <img src="/static/img/GGSIU_logo.svg.png" alt="USAR Logo" class="h-14" />
+      <img src="/static/img/Logo/GGSIU_logo.svg.png" alt="IPU Logo" class="h-14" />
       <div>
         <h1 class="text-2xl font-bold text-blue-900">University School of Automation & Robotics</h1>
         <p class="text-sm text-gray-600">Guru Gobind Singh Indraprastha University, East Delhi Campus</p>
       </div>
     </div>
-    <img src="/static/img/new_logo_withoutbg.png" alt="New Logo" class="h-10" />
+    <img src="/static/img/Logo/new_logo_withoutbg.png" alt="New Logo" class="h-10" />
   </div>
 </header>
 
@@ -143,6 +144,21 @@
           <option value="Outside Delhi">Outside Delhi</option>
         </select>
       </div>
+      
+        <div>
+          <label class="block font-semibold">Mode of Payment of Remaining Academic Fee</label>
+          <select name="fee_mode" class="w-full border border-gray-300 rounded px-3 py-2" required>
+            <option value="">Select Payment Mode</option>
+            <option value="Online">Online through Fee Payment Portal</option>
+            <option value="DD">Demand Draft (DD)</option>
+          </select>
+        </div>
+      <div>
+        <label class="block font-semibold">Fee Payment Receipt/DD/UTR Number</label>
+        <input type="text" name="fee_reference" class="w-full border border-gray-300 rounded px-3 py-2" required />
+      </div>
+    </div>
+
     </div>
 
     <div class="text-center pt-6">

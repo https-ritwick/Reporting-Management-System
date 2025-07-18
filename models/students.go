@@ -19,4 +19,6 @@ type Student struct {
 	Group              string
 	Status             string
 	HasEdited          int
+	FeeMode            string
+	FeeReference       string
 }

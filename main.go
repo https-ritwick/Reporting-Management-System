@@ -31,6 +31,7 @@ func main() {
 	})
 
 	http.HandleFunc("/submit", handlers.SubmitHandler(db.Conn))
+	http.HandleFunc("/team", handlers.AboutHandler())
 	http.HandleFunc("/confirmation", handlers.ConfirmationHandler(db.Conn))
 	http.HandleFunc("/login", handlers.LoginHandler(db.Conn))
 	http.HandleFunc("/upgrade", handlers.UpgradeHandler(db.Conn))

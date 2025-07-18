@@ -16,7 +16,7 @@ func ExportStudentsHandler(db *sql.DB) http.HandlerFunc {
 		batch := r.URL.Query().Get("batch")
 		group := r.URL.Query().Get("group")
 
-		query := `SELECT application_number, full_name, branch, batch,  group_name  FROM students WHERE status = 'Reported'`
+		query := `SELECT application_number, full_name, branch, batch,  group_name  FROM students WHERE status = 'Reported' AND lateral_entry = 'No'`
 		args := []interface{}{}
 
 		if search != "" {
