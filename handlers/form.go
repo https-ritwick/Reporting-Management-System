@@ -43,6 +43,7 @@ func SubmitHandler(db *sql.DB) http.HandlerFunc {
 			ApplicationNumber:  r.FormValue("application_number"),
 			FatherName:         r.FormValue("father_name"),
 			DOB:                r.FormValue("dob"),
+			Gender:             r.FormValue("gender"),
 			ContactNumber:      r.FormValue("contact_number"),
 			Email:              r.FormValue("email"),
 			CorrespondenceAddr: r.FormValue("correspondence_address"),
@@ -71,17 +72,18 @@ func SubmitHandler(db *sql.DB) http.HandlerFunc {
 
 		// Final insert query using double quotes and escaped backticked column `rank`
 		insertQuery := "INSERT INTO students (" +
-			"application_number, full_name, father_name, dob, contact_number, " +
+			"application_number, full_name, father_name, dob, gender, contact_number, " +
 			"email, correspondence_address, permanent_address, branch, lateral_entry, " +
 			"category, sub_category, exam_rank, seat_quota, batch, group_name, status, " +
 			"has_edited, fee_mode, fee_reference" +
-			") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+			") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 
 		_, err = db.Exec(insertQuery,
 			student.ApplicationNumber,
 			student.FullName,
 			student.FatherName,
 			student.DOB,
+			student.Gender,
 			student.ContactNumber,
 			student.Email,
 			student.CorrespondenceAddr,

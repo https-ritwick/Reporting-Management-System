@@ -12,10 +12,12 @@ import (
 )
 
 type DashboardData struct {
-	Total       int
-	Reported    int
-	Withdrawn   int
-	BranchStats map[string]int
+	Total         int
+	Reported      int
+	Withdrawn     int
+	BranchStats   map[string]int
+	GenderStats   []GenderStatsRow
+	CategoryStats []CategoryStatsRow
 }
 
 type Student struct {
@@ -29,17 +31,36 @@ type Student struct {
 	Group             string `json:"group" db:"group_name"`
 	Status            string `json:"status"`
 }
+type GenderStatsRow struct {
+	Branch string
+	Male   int
+	Female int
+	Other  int
+}
+
+type CategoryStatsRow struct {
+	Branch  string
+	General int
+	EWS     int
+	OBC     int
+	SC      int
+	ST      int
+}
 
 // DashboardStatsHandler - Home Tab
 func DashboardStatsHandler(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var total, reported, withdrawn int
 		branchStats := make(map[string]int)
+		var genderStats []GenderStatsRow
+		var categoryStats []CategoryStatsRow
 
+		// Existing stats
 		db.QueryRow("SELECT COUNT(*) FROM students").Scan(&total)
 		db.QueryRow("SELECT COUNT(*) FROM students WHERE status = 'Reported'").Scan(&reported)
 		db.QueryRow("SELECT COUNT(*) FROM students WHERE status = 'Withdrawn'").Scan(&withdrawn)
 
+		// Branch-wise count
 		rows, _ := db.Query("SELECT branch, COUNT(*) FROM students GROUP BY branch")
 		defer rows.Close()
 		for rows.Next() {
@@ -49,12 +70,50 @@ func DashboardStatsHandler(db *sql.DB) http.HandlerFunc {
 			branchStats[branch] = count
 		}
 
+		// Gender stats: only for Reported students
+		genderQuery := `
+			SELECT branch,
+				SUM(CASE WHEN gender = 'Male' THEN 1 ELSE 0 END) AS Male,
+				SUM(CASE WHEN gender = 'Female' THEN 1 ELSE 0 END) AS Female,
+				SUM(CASE WHEN gender = 'Other' THEN 1 ELSE 0 END) AS Other
+			FROM students
+			WHERE status = 'Reported'
+			GROUP BY branch
+		`
+		rows, _ = db.Query(genderQuery)
+		for rows.Next() {
+			var row GenderStatsRow
+			rows.Scan(&row.Branch, &row.Male, &row.Female, &row.Other)
+			genderStats = append(genderStats, row)
+		}
+
+		// Category stats: only for Reported students
+		categoryQuery := `
+			SELECT branch,
+				SUM(CASE WHEN category = 'General' THEN 1 ELSE 0 END) AS General,
+				SUM(CASE WHEN category = 'General-EWS' THEN 1 ELSE 0 END) AS EWS,
+				SUM(CASE WHEN category = 'OBC' THEN 1 ELSE 0 END) AS OBC,
+				SUM(CASE WHEN category = 'SC' THEN 1 ELSE 0 END) AS SC,
+				SUM(CASE WHEN category = 'ST' THEN 1 ELSE 0 END) AS ST
+			FROM students
+			WHERE status = 'Reported'
+			GROUP BY branch
+		`
+		rows, _ = db.Query(categoryQuery)
+		for rows.Next() {
+			var row CategoryStatsRow
+			rows.Scan(&row.Branch, &row.General, &row.EWS, &row.OBC, &row.SC, &row.ST)
+			categoryStats = append(categoryStats, row)
+		}
+
 		tmpl := template.Must(template.ParseFiles("templates/dashboard_stats.html"))
 		tmpl.Execute(w, DashboardData{
-			Total:       total,
-			Reported:    reported,
-			Withdrawn:   withdrawn,
-			BranchStats: branchStats,
+			Total:         total,
+			Reported:      reported,
+			Withdrawn:     withdrawn,
+			BranchStats:   branchStats,
+			GenderStats:   genderStats,
+			CategoryStats: categoryStats,
 		})
 	}
 }

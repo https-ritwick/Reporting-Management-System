@@ -64,6 +64,61 @@
     </div>
 
   </main>
+  <section class="max-w-7xl mx-auto mt-12 px-4">
+  <h2 class="text-2xl font-bold text-blue-800 mb-4">Branch-wise Gender Distribution</h2>
+  <div class="overflow-x-auto">
+    <table class="min-w-full bg-white rounded shadow">
+      <thead class="bg-blue-100 text-blue-800">
+        <tr>
+          <th class="px-4 py-2 text-left">Branch</th>
+          <th class="px-4 py-2 text-left">Male</th>
+          <th class="px-4 py-2 text-left">Female</th>
+          <th class="px-4 py-2 text-left">Other</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{range .GenderStats}}
+        <tr class="border-t">
+          <td class="px-4 py-2 font-semibold">{{.Branch}}</td>
+          <td class="px-4 py-2">{{.Male}}</td>
+          <td class="px-4 py-2">{{.Female}}</td>
+          <td class="px-4 py-2">{{.Other}}</td>
+        </tr>
+        {{end}}
+      </tbody>
+    </table>
+  </div>
+</section>
+<section class="max-w-7xl mx-auto mt-12 px-4">
+  <h2 class="text-2xl font-bold text-blue-800 mb-4">Branch-wise Category Distribution</h2>
+  <div class="overflow-x-auto">
+    <table class="min-w-full bg-white rounded shadow">
+      <thead class="bg-blue-100 text-blue-800">
+        <tr>
+          <th class="px-4 py-2 text-left">Branch</th>
+          <th class="px-4 py-2 text-left">General</th>
+          <th class="px-4 py-2 text-left">General-EWS</th>
+          <th class="px-4 py-2 text-left">OBC</th>
+          <th class="px-4 py-2 text-left">SC</th>
+          <th class="px-4 py-2 text-left">ST</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{range .CategoryStats}}
+        <tr class="border-t">
+          <td class="px-4 py-2 font-semibold">{{.Branch}}</td>
+          <td class="px-4 py-2">{{.General}}</td>
+          <td class="px-4 py-2">{{.EWS}}</td>
+          <td class="px-4 py-2">{{.OBC}}</td>
+          <td class="px-4 py-2">{{.SC}}</td>
+          <td class="px-4 py-2">{{.ST}}</td>
+        </tr>
+        {{end}}
+      </tbody>
+    </table>
+  </div>
+</section>
+
 <footer class="bg-gray-900 text-white mt-16">
   <div class="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-3 gap-6">
     <div>

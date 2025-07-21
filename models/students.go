@@ -21,4 +21,5 @@ type Student struct {
 	HasEdited          int
 	FeeMode            string
 	FeeReference       string
+	Gender             string
 }
