@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Uploaded Documents - Student Cell</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 p-6">
+
+  <h1 class="text-3xl font-bold text-blue-900 mb-6">📁 Uploaded Documents</h1>
+
+  <div class="overflow-x-auto bg-white p-4 shadow rounded-lg">
+    <form method="POST" action="/dashboard/uploads/reupload" enctype="multipart/form-data">
+  <div class="overflow-x-auto bg-white p-4 shadow rounded-lg">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead>
+        <tr class="bg-blue-100 text-left">
+          <th class="px-4 py-2">App No</th>
+          <th class="px-4 py-2">Name</th>
+          <th class="px-4 py-2">Photo</th>
+          <th class="px-4 py-2">JEE Scorecard</th>
+          <th class="px-4 py-2">Profile</th>
+          <th class="px-4 py-2">Fee Receipt</th>
+          <th class="px-4 py-2">Reporting Slip</th>
+          <th class="px-4 py-2">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{range .Uploads}}
+        <tr class="hover:bg-gray-50">
+          <td class="px-4 py-2 font-medium">{{.AppNumber}}</td>
+          <td class="px-4 py-2">{{.FullName}}</td>
+
+          {{/* Re-upload Inputs */}}
+          <td class="px-4 py-2">
+            <a href="/{{.Photo}}" target="_blank" class="text-blue-600 underline">View</a><br>
+            <input type="file" name="photo_{{.AppNumber}}" accept="image/*" class="mt-1 text-xs" />
+          </td>
+          <td class="px-4 py-2">
+            <a href="/{{.JEEScorecard}}" target="_blank" class="text-blue-600 underline">View</a><br>
+            <input type="file" name="jee_scorecard_{{.AppNumber}}" accept="application/pdf" class="mt-1 text-xs" />
+          </td>
+          <td class="px-4 py-2">
+            <a href="/{{.Profile}}" target="_blank" class="text-blue-600 underline">View</a><br>
+            <input type="file" name="profile_{{.AppNumber}}" accept="application/pdf" class="mt-1 text-xs" />
+          </td>
+          <td class="px-4 py-2">
+            <a href="/{{.FeeReceipt}}" target="_blank" class="text-blue-600 underline">View</a><br>
+            <input type="file" name="fee_receipt_{{.AppNumber}}" accept="application/pdf" class="mt-1 text-xs" />
+          </td>
+          <td class="px-4 py-2">
+            <a href="/{{.ReportingSlip}}" target="_blank" class="text-blue-600 underline">View</a><br>
+            <input type="file" name="reporting_slip_{{.AppNumber}}" accept="application/pdf" class="mt-1 text-xs" />
+          </td>
+          <td class="px-4 py-2">
+            <button type="submit" name="app_number" value="{{.AppNumber}}" class="bg-blue-700 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">Re-upload</button>
+          </td>
+        </tr>
+        {{end}}
+      </tbody>
+    </table>
+  </div>
+</form>
+
+  </div>
+
+</body>
+</html>

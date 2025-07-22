@@ -6,8 +6,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"io"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -306,5 +309,131 @@ func ResendEmailHandler(db *sql.DB) http.HandlerFunc {
 
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("✅ Email sent successfully to " + email))
+	}
+}
+
+type UploadRecord struct {
+	AppNumber     string
+	FullName      string
+	Photo         string
+	JEEScorecard  string
+	Profile       string
+	FeeReceipt    string
+	ReportingSlip string
+}
+
+// GET /dashboard/uploads
+func UploadsDashboardHandler(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		query := `
+			SELECT 
+				u.application_number, s.full_name, 
+				u.photo_path, u.jee_scorecard_path, 
+				u.candidate_profile_path, u.fee_receipt_path, u.reporting_slip_path
+			FROM uploads u
+			JOIN students s ON u.application_number = s.application_number
+			ORDER BY u.uploaded_at DESC
+		`
+
+		rows, err := db.Query(query)
+		if err != nil {
+			http.Error(w, "Database error while fetching uploads", http.StatusInternalServerError)
+			return
+		}
+		defer rows.Close()
+
+		var uploads []UploadRecord
+		for rows.Next() {
+			var u UploadRecord
+			err := rows.Scan(&u.AppNumber, &u.FullName, &u.Photo, &u.JEEScorecard, &u.Profile, &u.FeeReceipt, &u.ReportingSlip)
+			if err == nil {
+				// Fix file paths for URL compatibility
+				u.Photo = strings.ReplaceAll(u.Photo, "\\", "/")
+				u.JEEScorecard = strings.ReplaceAll(u.JEEScorecard, "\\", "/")
+				u.Profile = strings.ReplaceAll(u.Profile, "\\", "/")
+				u.FeeReceipt = strings.ReplaceAll(u.FeeReceipt, "\\", "/")
+				u.ReportingSlip = strings.ReplaceAll(u.ReportingSlip, "\\", "/")
+
+				uploads = append(uploads, u)
+			}
+		}
+
+		tmpl := template.Must(template.ParseFiles("templates/upload_list.html"))
+		tmpl.Execute(w, map[string]interface{}{
+			"Uploads": uploads,
+		})
+	}
+}
+func ReuploadDocumentHandler(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		err := r.ParseMultipartForm(10 << 20) // 10MB
+		if err != nil {
+			http.Error(w, "Error parsing form", http.StatusBadRequest)
+			return
+		}
+
+		appNo := r.FormValue("app_number")
+		if appNo == "" {
+			http.Error(w, "Application number missing", http.StatusBadRequest)
+			return
+		}
+
+		basePath := fmt.Sprintf("static/uploads/%s", appNo)
+		os.MkdirAll(basePath, os.ModePerm)
+
+		fields := map[string]string{
+			"photo":          "photo",
+			"jee_scorecard":  "jee_scorecard",
+			"profile":        "candidate_profile",
+			"fee_receipt":    "fee_receipt",
+			"reporting_slip": "reporting_slip",
+		}
+		updateMap := map[string]string{}
+
+		for field, filename := range fields {
+			fKey := fmt.Sprintf("%s_%s", field, appNo)
+			file, handler, err := r.FormFile(fKey)
+			if err != nil {
+				continue // Skip if not uploaded
+			}
+			defer file.Close()
+
+			ext := filepath.Ext(handler.Filename)
+			savePath := fmt.Sprintf("%s/%s%s", basePath, filename, ext)
+
+			out, err := os.Create(savePath)
+			if err != nil {
+				log.Println("❌ Cannot save:", err)
+				continue
+			}
+			defer out.Close()
+			io.Copy(out, file)
+
+			updateMap[filename+"_path"] = savePath
+		}
+
+		// Update DB
+		if len(updateMap) > 0 {
+			query := "UPDATE uploads SET "
+			args := []interface{}{}
+			setParts := []string{}
+			for col, path := range updateMap {
+				setParts = append(setParts, fmt.Sprintf("%s = ?", col))
+				args = append(args, strings.ReplaceAll(path, "\\", "/"))
+			}
+			query += strings.Join(setParts, ", ") + " WHERE application_number = ?"
+			args = append(args, appNo)
+			log.Printf("➡️  Updating uploads for %s with fields: %+v", appNo, updateMap)
+			log.Printf("Generated SQL: %s", query)
+			log.Printf("Args: %v", args)
+
+			_, err := db.Exec(query, args...)
+			if err != nil {
+				http.Error(w, "Failed to update database", http.StatusInternalServerError)
+				return
+			}
+		}
+
+		http.Redirect(w, r, "/dashboard/uploads", http.StatusSeeOther)
 	}
 }

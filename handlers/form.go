@@ -5,8 +5,11 @@ import (
 	"Batch/utils"
 	"database/sql"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -19,7 +22,6 @@ func init() {
 		log.Fatal("❌ Error loading .env file")
 	}
 }
-
 func SubmitHandler(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
@@ -27,20 +29,20 @@ func SubmitHandler(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		// Parse form values
-		err := r.ParseForm()
+		err := r.ParseMultipartForm(20 << 20) // 20MB limit
 		if err != nil {
-			http.Error(w, "Invalid Form Submission", http.StatusBadRequest)
+			http.Error(w, "Error parsing form", http.StatusBadRequest)
 			return
 		}
 
-		// Convert rank to integer
+		// Extract and parse fields
 		rank, _ := strconv.Atoi(r.FormValue("rank"))
+		appNo := r.FormValue("application_number")
+		fullName := r.FormValue("full_name")
 
-		// Create Student object
 		student := models.Student{
-			FullName:           r.FormValue("full_name"),
-			ApplicationNumber:  r.FormValue("application_number"),
+			FullName:           fullName,
+			ApplicationNumber:  appNo,
 			FatherName:         r.FormValue("father_name"),
 			DOB:                r.FormValue("dob"),
 			Gender:             r.FormValue("gender"),
@@ -58,53 +60,89 @@ func SubmitHandler(db *sql.DB) http.HandlerFunc {
 			FeeReference:       r.FormValue("fee_reference"),
 			Status:             "Reported",
 		}
+
 		var lateralInt int
 		isLE := strings.EqualFold(student.LateralEntry, "Yes")
 		if isLE {
-			//lateralInt := 1
 			student.Batch = ""
 			student.Group = ""
 		} else {
-			//lateralInt := 0
 			student.Batch, student.Group = utils.AssignBatchAndGroup(db, student.Branch)
 		}
-		log.Printf("Final Batch: %s | Final Group: %s | IsLE: %v\n", student.Batch, student.Group, isLE)
 
-		// Final insert query using double quotes and escaped backticked column `rank`
-		insertQuery := "INSERT INTO students (" +
-			"application_number, full_name, father_name, dob, gender, contact_number, " +
-			"email, correspondence_address, permanent_address, branch, lateral_entry, " +
-			"category, sub_category, exam_rank, seat_quota, batch, group_name, status, " +
-			"has_edited, fee_mode, fee_reference" +
-			") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+		// Save student in students table
+		insertQuery := `INSERT INTO students (
+			application_number, full_name, father_name, dob, gender, contact_number,
+			email, correspondence_address, permanent_address, branch, lateral_entry,
+			category, sub_category, exam_rank, seat_quota, batch, group_name, status,
+			has_edited, fee_mode, fee_reference
+		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 		_, err = db.Exec(insertQuery,
-			student.ApplicationNumber,
-			student.FullName,
-			student.FatherName,
-			student.DOB,
-			student.Gender,
-			student.ContactNumber,
-			student.Email,
-			student.CorrespondenceAddr,
-			student.PermanentAddr,
-			student.Branch,
-			lateralInt,
-			student.Category,
-			student.SubCategory,
-			student.Rank,
-			student.SeatQuota,
-			student.Batch,
-			student.Group,
-			student.Status,
-			0, // has_edited
-			student.FeeMode,
-			student.FeeReference,
+			student.ApplicationNumber, student.FullName, student.FatherName, student.DOB, student.Gender,
+			student.ContactNumber, student.Email, student.CorrespondenceAddr, student.PermanentAddr,
+			student.Branch, lateralInt, student.Category, student.SubCategory, student.Rank,
+			student.SeatQuota, student.Batch, student.Group, student.Status, 0,
+			student.FeeMode, student.FeeReference,
 		)
-
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Database error: %v", err), http.StatusInternalServerError)
 			return
+		}
+
+		// --- Handle File Uploads ---
+		uploadDir := fmt.Sprintf("static/uploads/%s", appNo)
+		os.MkdirAll(uploadDir, os.ModePerm)
+
+		paths := map[string]string{}
+		files := map[string]string{
+			"photo":             "photo",
+			"jee_scorecard":     "jee_scorecard",
+			"candidate_profile": "candidate_profile",
+			"fee_receipt":       "fee_receipt",
+			"reporting_slip":    "reporting_slip",
+		}
+
+		for field, filename := range files {
+			file, handler, err := r.FormFile(field)
+			if err != nil {
+				log.Printf("❌ Missing file for %s: %v\n", field, err)
+				continue
+			}
+			defer file.Close()
+
+			filePath := fmt.Sprintf("%s/%s%s", uploadDir, filename, filepath.Ext(handler.Filename))
+			dst, err := os.Create(filePath)
+			if err != nil {
+				log.Printf("❌ Failed to create file: %v\n", err)
+				continue
+			}
+			defer dst.Close()
+
+			_, err = io.Copy(dst, file)
+			if err != nil {
+				log.Printf("❌ Failed to save file: %v\n", err)
+				continue
+			}
+
+			paths[field+"_path"] = filePath
+		}
+
+		// --- Insert into uploads table ---
+		_, err = db.Exec(`INSERT INTO uploads (
+			application_number, full_name,
+			photo_path, jee_scorecard_path, candidate_profile_path,
+			fee_receipt_path, reporting_slip_path
+		) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+			appNo, fullName,
+			paths["photo_path"],
+			paths["jee_scorecard_path"],
+			paths["candidate_profile_path"],
+			paths["fee_receipt_path"],
+			paths["reporting_slip_path"],
+		)
+		if err != nil {
+			log.Println("❌ Failed to insert into uploads table:", err)
 		}
 		groupDisplay := student.Group
 		batchDisplay := student.Batch

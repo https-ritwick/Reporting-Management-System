@@ -45,7 +45,7 @@
 <!-- Main Form Section -->
 <main class="max-w-5xl mx-auto py-10 px-4">
   <h2 class="text-3xl font-bold text-center text-blue-800 mb-8">Student Registration Form</h2>
-  <form action="/submit" method="POST" class="bg-white rounded-lg shadow-md p-8 space-y-6">
+  <form action="/submit" method="POST" enctype="multipart/form-data" class="bg-white rounded-lg shadow-md p-8 space-y-6">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
         <label class="block font-semibold">Full Name</label>
@@ -165,8 +165,33 @@
         <input type="text" name="fee_reference" class="w-full border border-gray-300 rounded px-3 py-2" required />
       </div>
     </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <div>
+    <label class="block font-semibold">Passport Size Photograph</label>
+    <input type="file" name="photo" accept="image/*" class="w-full border border-gray-300 rounded px-3 py-2" required />
+  </div>
 
-    </div>
+  <div>
+    <label class="block font-semibold">JEE Mains Scorecard (for B.Tech) / CET Admit Card (for LE-B.Tech)-PDF</label>
+    <input type="file" name="jee_scorecard" accept="application/pdf" class="w-full border border-gray-300 rounded px-3 py-2" />
+  </div>
+
+  <div>
+    <label class="block font-semibold">GGSIPU Candidate Profile (PDF)</label>
+    <input type="file" name="candidate_profile" accept="application/pdf" class="w-full border border-gray-300 rounded px-3 py-2" required />
+  </div>
+
+  <div>
+    <label class="block font-semibold">Fee Payment Receipt / Demand Draft (PDF)</label>
+    <input type="file" name="fee_receipt" accept="application/pdf" class="w-full border border-gray-300 rounded px-3 py-2" required />
+  </div>
+
+  <div>
+    <label class="block font-semibold">Reporting Slip (PDF)</label>
+    <input type="file" name="reporting_slip" accept="application/pdf" class="w-full border border-gray-300 rounded px-3 py-2" required />
+  </div>
+</div>
+
 
     <div class="text-center pt-6">
       <button type="submit" class="bg-blue-800 text-white px-6 py-2 rounded hover:bg-blue-700 font-semibold transition duration-300">Submit</button>
