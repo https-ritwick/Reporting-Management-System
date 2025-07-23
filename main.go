@@ -30,11 +30,6 @@ func main() {
 		tmpl.Execute(w, nil)
 	})
 
-	//Upload Routes
-	http.HandleFunc("/dashboard/uploads", handlers.UploadsDashboardHandler(db.Conn))
-	http.HandleFunc("/dashboard/uploads/reupload", handlers.ReuploadDocumentHandler(db.Conn))
-	http.HandleFunc("/cutoff", handlers.CutoffHandler(db.Conn))
-
 	http.HandleFunc("/submit", handlers.SubmitHandler(db.Conn))
 	http.HandleFunc("/team", handlers.AboutHandler())
 	http.HandleFunc("/confirmation", handlers.ConfirmationHandler(db.Conn))
@@ -51,6 +46,10 @@ func main() {
 	http.HandleFunc("/admin/students", middleware.AuthMiddleware(handlers.StudentListHandler(db.Conn)))
 	http.HandleFunc("/update-student", middleware.AuthMiddleware(handlers.UpdateStudentHandler(db.Conn)))
 	http.HandleFunc("/resend-email", middleware.AuthMiddleware(handlers.ResendEmailHandler(db.Conn)))
+	//Upload Routes
+	http.HandleFunc("/dashboard/uploads", middleware.AuthMiddleware(handlers.UploadsDashboardHandler(db.Conn)))
+	http.HandleFunc("/dashboard/uploads/reupload", middleware.AuthMiddleware(handlers.ReuploadDocumentHandler(db.Conn)))
+	http.HandleFunc("/cutoff", middleware.AuthMiddleware(handlers.CutoffHandler(db.Conn)))
 
 	// Scan & Token System
 	http.HandleFunc("/scan", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {

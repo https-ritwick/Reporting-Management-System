@@ -341,17 +341,29 @@ type UploadRecord struct {
 // GET /dashboard/uploads
 func UploadsDashboardHandler(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		query := `
+		search := r.URL.Query().Get("search")
+		var query strings.Builder
+		query.WriteString(`
 			SELECT 
 				u.application_number, s.full_name, 
 				u.photo_path, u.jee_scorecard_path, 
 				u.candidate_profile_path, u.fee_receipt_path, u.reporting_slip_path
 			FROM uploads u
 			JOIN students s ON u.application_number = s.application_number
-			ORDER BY u.uploaded_at DESC
-		`
+		`)
 
-		rows, err := db.Query(query)
+		var args []interface{}
+		if search != "" {
+			query.WriteString(`
+				WHERE LOWER(s.full_name) LIKE ? OR u.application_number LIKE ?
+			`)
+			searchTerm := "%" + strings.ToLower(search) + "%"
+			args = append(args, searchTerm, searchTerm)
+		}
+
+		query.WriteString(" ORDER BY u.uploaded_at DESC")
+
+		rows, err := db.Query(query.String(), args...)
 		if err != nil {
 			http.Error(w, "Database error while fetching uploads", http.StatusInternalServerError)
 			return
@@ -363,13 +375,11 @@ func UploadsDashboardHandler(db *sql.DB) http.HandlerFunc {
 			var u UploadRecord
 			err := rows.Scan(&u.AppNumber, &u.FullName, &u.Photo, &u.JEEScorecard, &u.Profile, &u.FeeReceipt, &u.ReportingSlip)
 			if err == nil {
-				// Fix file paths for URL compatibility
 				u.Photo = strings.ReplaceAll(u.Photo, "\\", "/")
 				u.JEEScorecard = strings.ReplaceAll(u.JEEScorecard, "\\", "/")
 				u.Profile = strings.ReplaceAll(u.Profile, "\\", "/")
 				u.FeeReceipt = strings.ReplaceAll(u.FeeReceipt, "\\", "/")
 				u.ReportingSlip = strings.ReplaceAll(u.ReportingSlip, "\\", "/")
-
 				uploads = append(uploads, u)
 			}
 		}
@@ -380,6 +390,7 @@ func UploadsDashboardHandler(db *sql.DB) http.HandlerFunc {
 		})
 	}
 }
+
 func ReuploadDocumentHandler(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		err := r.ParseMultipartForm(10 << 20) // 10MB
