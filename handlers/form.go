@@ -61,7 +61,6 @@ func SubmitHandler(db *sql.DB) http.HandlerFunc {
 		}
 		student.Batch = ""
 		student.Group = ""
-		var lateralInt int
 		var isLE int
 		if student.LateralEntry == "Yes" {
 			isLE = 1
@@ -146,7 +145,7 @@ func SubmitHandler(db *sql.DB) http.HandlerFunc {
 		}
 		groupDisplay := student.Group
 		batchDisplay := student.Batch
-		if lateralInt == 1 {
+		if isLE == 1 {
 			batchDisplay = "Not Applicable (LE Student)"
 			groupDisplay = "Not Applicable (LE Student)"
 		}

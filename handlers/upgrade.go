@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -41,9 +42,10 @@ func UpgradeHandler(db *sql.DB) http.HandlerFunc {
 		var dbPrevBranch, fullName string
 		var lastUpgradeAt sql.NullTime
 		var lateralEntry int
+		var email string
 
-		query := `SELECT dob, branch, full_name, last_upgrade_at,lateral_entry FROM students WHERE application_number = ?`
-		err := db.QueryRow(query, appNum).Scan(&dbDOB, &dbPrevBranch, &fullName, &lastUpgradeAt, &lateralEntry)
+		query := `SELECT  dob, branch, full_name, last_upgrade_at,lateral_entry, email FROM students WHERE application_number = ?`
+		err := db.QueryRow(query, appNum).Scan(&dbDOB, &dbPrevBranch, &fullName, &lastUpgradeAt, &lateralEntry, &email)
 		if err != nil {
 			http.Error(w, "Student not found", http.StatusNotFound)
 			return
@@ -123,6 +125,65 @@ func UpgradeHandler(db *sql.DB) http.HandlerFunc {
 		if err != nil {
 			http.Error(w, "Failed to update uploads table", http.StatusInternalServerError)
 			return
+		}
+		groupDisplay := group
+		batchDisplay := batch
+		if lateralEntry == 1 {
+			batchDisplay = "Not Applicable (LE Student)"
+			groupDisplay = "Not Applicable (LE Student)"
+		}
+		html := fmt.Sprintf(`
+			<!DOCTYPE html>
+			<html>
+			<head>
+			<meta charset="UTF-8">
+			<title>Registration Confirmation</title>
+			</head>
+			<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+			<table width="100%%" style="max-width: 600px; margin: auto; background: #fff; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+				<tr style="background-color: #003366; color: white;">
+				<td style="padding: 20px;">
+					<img src="https://upload.wikimedia.org/wikipedia/en/thumb/b/b8/GGSIU_logo.svg/1200px-GGSIU_logo.svg.png" alt="IPU Logo" width="60" style="float: left;">
+					<h2 style="text-align: center; margin: 0;">University School of Automation & Robotics</h2>
+					<p style="text-align: center; margin: 0;">Guru Gobind Singh Indraprastha University, East Delhi Campus</p>
+				</td>
+				</tr>
+				<tr>
+				<td style="padding: 20px;">
+					<h3>Dear %s,</h3>
+					<p>Your branch has been successfully updated. You can start attending your classes in the new branch according to the assigned batch and group</p>
+					<table cellpadding="8" style="width: 100%%; border-collapse: collapse;">
+					<tr><td><strong>Application Number</strong></td><td>%s</td></tr>
+					<tr><td><strong>Branch</strong></td><td>%s</td></tr>
+					<tr><td><strong>Allotted Batch</strong></td><td>%s</td></tr>
+					<tr><td><strong>Allotted Group</strong></td><td>%s</td></tr>
+					</table>
+
+					<h4><strong> Important Instructions </strong></h4>
+					<ul>
+					<li><a class="underline"href="https://docs.google.com/document/d/1B3zj4LK8akjsmjB_nNKSfM9_Tmv4j_D_00z0W6nx14k/edit?usp=sharing" target="_blank">
+      				Click Here to Read Important Instructions for Newly Admitted Candidates.
+      				</a></li>
+					<li>Please ensure all details are correct.</li>
+					<li>Please Note Down your Allotted Batch & Group for Future Reference</li>
+					<li>Students may fill out the Hostel Admission Form available on the University Website.</li>
+					<li>If any discrepancies are found, please reply to this email with the correct information.</li>
+					<li>Join the official WhatsApp Group.</li>
+					</ul>
+
+					<p style="margin-top: 30px;">Regards,<br><strong>USAR Student Cell</strong><br>GGSIPU</p>
+				</td>
+				</tr>
+			</table>S
+			</body>
+			</html>
+		`, fullName, appNum, newBranch, batchDisplay, groupDisplay)
+
+		err = utils.SendHTMLEmail(email, "Branch Upgrade Confirmation - USAR", html)
+		if err != nil {
+			log.Println("❌ Failed to send registration email:", err)
+		} else {
+			log.Println("✅ Email sent to:", email)
 		}
 
 		// Render confirmation

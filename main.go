@@ -33,6 +33,7 @@ func main() {
 	//Upload Routes
 	http.HandleFunc("/dashboard/uploads", handlers.UploadsDashboardHandler(db.Conn))
 	http.HandleFunc("/dashboard/uploads/reupload", handlers.ReuploadDocumentHandler(db.Conn))
+	http.HandleFunc("/cutoff", handlers.CutoffHandler(db.Conn))
 
 	http.HandleFunc("/submit", handlers.SubmitHandler(db.Conn))
 	http.HandleFunc("/team", handlers.AboutHandler())

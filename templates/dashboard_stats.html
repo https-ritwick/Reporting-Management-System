@@ -118,6 +118,59 @@
     </table>
   </div>
 </section>
+<section class="max-w-7xl mx-auto mt-16 px-4">
+  <h2 class="text-2xl font-bold text-blue-800 mb-4"> Cutoff Rank Calculator (Reported Students)</h2>
+  <div class="bg-white shadow p-6 rounded-lg grid grid-cols-1 md:grid-cols-4 gap-4">
+    <!-- Branch Dropdown -->
+    <div>
+      <label class="block font-semibold mb-1">Branch</label>
+      <select id="branch" class="w-full border rounded p-2">
+        <option value="All">All</option>
+        {{range .BranchList}}<option value="{{.}}">{{.}}</option>{{end}}
+      </select>
+    </div>
+
+    <!-- Quota Dropdown -->
+    <div>
+      <label class="block font-semibold mb-1">Allotment Quota</label>
+      <select id="quota" class="w-full border rounded p-2">
+        <option value="All">All</option>
+        <option value="Delhi">Delhi</option>
+        <option value="Outside Delhi">Outside Delhi</option>
+      </select>
+    </div>
+
+    <!-- Category Dropdown -->
+    <div>
+      <label class="block font-semibold mb-1">Category</label>
+      <select id="category" class="w-full border rounded p-2">
+        <option value="All">All</option>
+        <option value="General">General</option>
+        <option value="General-EWS">General-EWS</option>
+        <option value="OBC">OBC</option>
+        <option value="SC">SC</option>
+        <option value="ST">ST</option>
+      </select>
+    </div>
+
+    <!-- Gender Dropdown -->
+    <div>
+      <label class="block font-semibold mb-1">Gender</label>
+      <select id="gender" class="w-full border rounded p-2">
+        <option value="All">All</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Cutoff Result -->
+  <div class="bg-white mt-6 p-6 shadow rounded-lg text-lg text-gray-800 font-semibold" id="cutoffResult">
+    Select filters above to view minimum and maximum ranks based on reported students.
+  </div>
+</section>
+
 
 <footer class="bg-gray-900 text-white mt-16">
   <div class="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -160,6 +213,41 @@
     © Designed and Developed by Software Development Cell and Student Council of USAR 
   </div>
 </footer>
+<script>
+  const branch = document.getElementById('branch');
+  const quota = document.getElementById('quota');
+  const category = document.getElementById('category');
+  const gender = document.getElementById('gender');
+  const result = document.getElementById('cutoffResult');
+
+  [branch, quota, category, gender].forEach(select => {
+    select.addEventListener('change', fetchCutoff);
+  });
+
+  function fetchCutoff() {
+    fetch('/cutoff', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        branch: branch.value,
+        quota: quota.value,
+        category: category.value,
+        gender: gender.value
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.count === 0 || data.min_rank === null) {
+        result.innerHTML = "No data available for the selected filters.";
+      } else {
+        result.innerHTML = ` <b>Reported Students:</b> ${data.count}<br> <b>Minimum Rank:</b> ${data.min_rank}<br> <b>Maximum Rank:</b> ${data.max_rank}`;
+      }
+    })
+    .catch(() => {
+      result.innerHTML = "Error retrieving cutoff data.";
+    });
+  }
+</script>
 
 </body>
 </html>

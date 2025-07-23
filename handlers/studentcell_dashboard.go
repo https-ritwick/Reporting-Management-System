@@ -110,14 +110,30 @@ func DashboardStatsHandler(db *sql.DB) http.HandlerFunc {
 		}
 
 		tmpl := template.Must(template.ParseFiles("templates/dashboard_stats.html"))
-		tmpl.Execute(w, DashboardData{
+		// Fetch distinct branches (only Reported students)
+		branches := fetchDistinctOptions(db, "branch")
+
+		type FullDashboardData struct {
+			Total         int
+			Reported      int
+			Withdrawn     int
+			BranchStats   map[string]int
+			GenderStats   []GenderStatsRow
+			CategoryStats []CategoryStatsRow
+			BranchList    []string
+		}
+
+		tmpl = template.Must(template.ParseFiles("templates/dashboard_stats.html"))
+		tmpl.Execute(w, FullDashboardData{
 			Total:         total,
 			Reported:      reported,
 			Withdrawn:     withdrawn,
 			BranchStats:   branchStats,
 			GenderStats:   genderStats,
 			CategoryStats: categoryStats,
+			BranchList:    branches,
 		})
+
 	}
 }
 

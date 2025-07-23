@@ -45,7 +45,12 @@
 <!-- Main Form Section -->
 <main class="max-w-5xl mx-auto py-10 px-4">
   <h2 class="text-3xl font-bold text-center text-blue-800 mb-8">Student Registration Form</h2>
-  <form action="/submit" method="POST" enctype="multipart/form-data" class="bg-white rounded-lg shadow-md p-8 space-y-6">
+  <!-- Add just the inside of the <form> tag with headings -->
+<form action="/submit" method="POST" enctype="multipart/form-data" class="bg-white rounded-lg shadow-md p-8 space-y-6">
+
+  <!-- SECTION: Personal Information -->
+  <div>
+    <h3 class="text-xl font-semibold text-blue-700 mb-2 border-b pb-1"> Personal Information</h3>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
         <label class="block font-semibold">Full Name</label>
@@ -64,13 +69,13 @@
         <input type="date" name="dob" class="w-full border border-gray-300 rounded px-3 py-2" required />
       </div>
       <div>
-          <label class="block font-semibold">Gender</label>
-          <select name="gender" class="w-full border border-gray-300 rounded px-3 py-2" required>
-            <option value="">Select Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Other">Other</option>
-          </select>
+        <label class="block font-semibold">Gender</label>
+        <select name="gender" class="w-full border border-gray-300 rounded px-3 py-2" required>
+          <option value="">Select Gender</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
+        </select>
       </div>
       <div>
         <label class="block font-semibold">Contact Number</label>
@@ -81,7 +86,11 @@
         <input type="email" name="email" class="w-full border border-gray-300 rounded px-3 py-2" required />
       </div>
     </div>
+  </div>
 
+  <!-- SECTION: Address Details -->
+  <div>
+    <h3 class="text-xl font-semibold text-blue-700 mb-2 border-b pb-1"> Address Details</h3>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
         <label class="block font-semibold">Correspondence Address</label>
@@ -92,7 +101,11 @@
         <textarea name="permanent_address" rows="3" class="w-full border border-gray-300 rounded px-3 py-2" required></textarea>
       </div>
     </div>
+  </div>
 
+  <!-- SECTION: Academic Details -->
+  <div>
+    <h3 class="text-xl font-semibold text-blue-700 mb-2 border-b pb-1"> Academic Details</h3>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
         <label class="block font-semibold">Branch Admitted To</label>
@@ -111,9 +124,6 @@
           <option value="Yes">Yes</option>
         </select>
       </div>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
         <label class="block font-semibold">Category</label>
         <select name="category" class="w-full border border-gray-300 rounded px-3 py-2" required>
@@ -146,71 +156,77 @@
       <div>
         <label class="block font-semibold">Seat Allotment Quota</label>
         <select name="seat_quota" class="w-full border border-gray-300 rounded px-3 py-2" required>
-          <option value="">Select Branch</option>
+          <option value="">Select Quota</option>
           <option value="Delhi">Delhi</option>
           <option value="Outside Delhi">Outside Delhi</option>
         </select>
       </div>
-      
-        <div>
-          <label class="block font-semibold">Mode of Payment of Remaining Academic Fee</label>
-          <select name="fee_mode" class="w-full border border-gray-300 rounded px-3 py-2" required>
-            <option value="">Select Payment Mode</option>
-            <option value="Online">Online through Fee Payment Portal</option>
-            <option value="DD">Demand Draft (DD)</option>
-          </select>
-        </div>
+    </div>
+  </div>
+
+  <!-- SECTION: Payment Details -->
+  <div>
+    <h3 class="text-xl font-semibold text-blue-700 mb-2 border-b pb-1">Fees Payment Details</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <label class="block font-semibold">Mode of Payment of Remaining Academic Fee</label>
+        <select name="fee_mode" class="w-full border border-gray-300 rounded px-3 py-2" required>
+          <option value="">Select Payment Mode</option>
+          <option value="Online">Online through Fee Payment Portal</option>
+          <option value="DD">Demand Draft (DD)</option>
+        </select>
+      </div>
       <div>
         <label class="block font-semibold">Fee Payment Receipt/DD/UTR Number</label>
         <input type="text" name="fee_reference" class="w-full border border-gray-300 rounded px-3 py-2" required />
       </div>
     </div>
+  </div>
+
+  <!-- SECTION: Document Uploads -->
+  <div>
+    <h3 class="text-xl font-semibold text-blue-700 mb-2 border-b pb-1"> Document Uploads</h3>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-  <div>
-    <label class="block font-semibold">Passport Size Photograph</label>
-    <input type="file" name="photo" accept="image/*" class="w-full border border-gray-300 rounded px-3 py-2" required />
-  </div>
-
-  <div>
-    <label class="block font-semibold">JEE Mains Scorecard (for B.Tech) / CET Admit Card (for LE-B.Tech)-PDF</label>
-    <input type="file" name="jee_scorecard" accept="application/pdf" class="w-full border border-gray-300 rounded px-3 py-2" />
-  </div>
-
-  <div>
-    <label class="block font-semibold">GGSIPU Candidate Profile (PDF)</label>
-    <input type="file" name="candidate_profile" accept="application/pdf" class="w-full border border-gray-300 rounded px-3 py-2" required />
-  </div>
-
-  <div>
-    <label class="block font-semibold">Fee Payment Receipt / Demand Draft (PDF)</label>
-    <input type="file" name="fee_receipt" accept="application/pdf" class="w-full border border-gray-300 rounded px-3 py-2" required />
-  </div>
-
-  <div>
-    <label class="block font-semibold">Reporting Slip (PDF)</label>
-    <input type="file" name="reporting_slip" accept="application/pdf" class="w-full border border-gray-300 rounded px-3 py-2" required />
-  </div>
-</div>
-
-
-    <div class="text-center pt-6">
-      <button type="submit" class="bg-blue-800 text-white px-6 py-2 rounded hover:bg-blue-700 font-semibold transition duration-300">Submit</button>
+      <div>
+        <label class="block font-semibold">Passport Size Photograph</label>
+        <input type="file" name="photo" accept="image/*" class="w-full border border-gray-300 rounded px-3 py-2" required />
+      </div>
+      <div>
+        <label class="block font-semibold">JEE Mains Scorecard / CET Admit Card (PDF)</label>
+        <input type="file" name="jee_scorecard" accept="application/pdf" class="w-full border border-gray-300 rounded px-3 py-2" />
+      </div>
+      <div>
+        <label class="block font-semibold">Candidate Profile (PDF)</label>
+        <input type="file" name="candidate_profile" accept="application/pdf" class="w-full border border-gray-300 rounded px-3 py-2" required />
+      </div>
+      <div>
+        <label class="block font-semibold">Fee Payment Receipt / DD (PDF)</label>
+        <input type="file" name="fee_receipt" accept="application/pdf" class="w-full border border-gray-300 rounded px-3 py-2" required />
+      </div>
+      <div>
+        <label class="block font-semibold">Reporting Slip (PDF)</label>
+        <input type="file" name="reporting_slip" accept="application/pdf" class="w-full border border-gray-300 rounded px-3 py-2" required />
+      </div>
     </div>
-    <!-- Additional Actions -->
-    <div class="mt-6 text-center space-y-2">
-      <p class="text-sm text-gray-700">
-        Branch Upgraded in Spot Round?
-        <a href="/upgrade" class="text-blue-600 hover:underline font-medium">Fill the Branch Upgradation form</a>
-      </p>
-      <p class="text-sm text-gray-700">
-        Incorrect details entered?
-        <a href="/edit" class="text-blue-600 hover:underline font-medium">Edit Student Details here</a>
-      </p>
-    </div>
-  </form>
+  </div>
+
+  <!-- Submit & Links -->
+  <div class="text-center pt-6">
+    <button type="submit" class="bg-blue-800 text-white px-6 py-2 rounded hover:bg-blue-700 font-semibold transition duration-300">Submit</button>
+  </div>
+
+  <div class="mt-6 text-center space-y-2">
+    <p class="text-sm text-gray-700">
+      Branch Upgraded in Spot Round? <a href="/upgrade" class="text-blue-600 hover:underline font-medium">Fill the Branch Upgradation form</a>
+    </p>
+    <p class="text-sm text-gray-700">
+      Incorrect details entered? <a href="/edit" class="text-blue-600 hover:underline font-medium">Edit Student Details here</a>
+    </p>
+  </div>
+</form>
+
 </main>
 
-<!-- Footer -->
 <footer class="bg-gray-900 text-white mt-16">
   <div class="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-3 gap-6">
     <div>
@@ -253,12 +269,12 @@
   </div>
 </footer>
 
+<!-- Application number validation -->
 <script>
   document.querySelector("form").addEventListener("submit", function (e) {
     const appInput = document.querySelector("input[name='application_number']");
     const appNumber = appInput.value.trim();
     const validApp = /^(131|128|127)\d{9}$/.test(appNumber);
-
     if (!validApp) {
       alert("Invalid GGSIPU Application Number! It must start with 131, 128, or 127 and be 12 digits.");
       appInput.focus();

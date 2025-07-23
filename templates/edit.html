@@ -37,11 +37,10 @@
 </nav>
 
 <main class="max-w-4xl mx-auto py-10 px-6">
-  <h2 class="text-2xl font-bold text-center text-blue-900 mb-6">Edit Your Details</h2>
-
   <!-- Step 1: Verification -->
   {{ if eq .Step "verify" }}
   <form method="POST" action="/edit?step=verify" class="bg-white shadow-lg rounded-lg p-8 space-y-5">
+    <h3 class="text-xl font-bold text-blue-800 mb-2"> Step 1: Verify Your Identity</h3>
     {{ if .Error }}
     <p class="text-center text-red-600 font-semibold">{{ .Error }}</p>
     {{ end }}
@@ -59,10 +58,10 @@
     <div>
       <label class="block font-semibold">Branch:</label>
       <select name="branch" class="w-full border rounded px-3 py-2" required>
-        <option value="AI-DS">AI-DS</option>
-        <option value="AI-ML">AI-ML</option>
-        <option value="IIOT">IIOT</option>
-        <option value="A&R">A&R</option>
+        <option value="AI-DS">Artificial Intelligence & Data Science</option>
+        <option value="AI-ML">Artificial Intelligence & Machine Learning</option>
+        <option value="IIOT">Industrial Internet of Things</option>
+        <option value="A&R">Autpmation & Robotics</option>
       </select>
     </div>
 
@@ -75,44 +74,57 @@
   {{ end }}
 
   <!-- Step 2: Edit -->
+  <section class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 mb-6 rounded shadow-md">
+    <h3 class="text-lg font-semibold mb-2"> Instructions for Editing Details:</h3>
+    <ul class="list-disc list-inside space-y-1 text-sm">
+      <li>Please make sure your <strong>GGSIPU Application Number</strong>, <strong>Date of Birth</strong>, and <strong>Branch</strong> are entered correctly for verification.</li>
+      <li>Only basic information like <strong>Name</strong>, <strong>Contact</strong>, <strong>Email</strong>, <strong>Addresses</strong>, and <strong>Category</strong> can be edited.</li>
+      <li>Fields like <strong>Branch</strong>, <strong>Batch</strong>, <strong>Group</strong>, and <strong>Date of Birth</strong> are locked and cannot be changed.</li>
+      <li>If you need to update any uploaded documents, you may re-upload them under the “Optional: Re-upload Documents” section.</li>
+      <li>Make sure all information is correct before clicking <strong>Save Changes</strong>. You can only edit your details <strong>once</strong>.</li>
+    </ul>
+  </section>
   {{ if eq .Step "edit" }}
-  <form method="POST" action="/edit?step=submit" class="bg-white shadow-lg rounded-lg p-8 space-y-5">
+  <form method="POST" action="/edit?step=submit" enctype="multipart/form-data" class="bg-white shadow-lg rounded-lg p-8 space-y-5">
+    <h3 class="text-xl font-bold text-blue-800 mb-4"> Step 2: Edit Student Details</h3>
 
-    <!-- Hidden: app no for DB matching -->
-    <input type="hidden" name="application_number" value="{{ .Student.ApplicationNumber }}"/>
+    <!-- Hidden Field -->
+    <input type="hidden" name="application_number" value="{{ .Student.ApplicationNumber }}" />
 
-    <div>
-      <label class="block font-semibold">Full Name:</label>
-      <input type="text" name="full_name" value="{{ .Student.FullName }}" class="w-full border rounded px-3 py-2" required />
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <label class="block font-semibold">Full Name:</label>
+        <input type="text" name="full_name" value="{{ .Student.FullName }}" class="w-full border rounded px-3 py-2" required />
+      </div>
+
+      <div>
+        <label class="block font-semibold">Father Name:</label>
+        <input type="text" name="father_name" value="{{ .Student.FatherName }}" class="w-full border rounded px-3 py-2" required />
+      </div>
+
+      <div>
+        <label class="block font-semibold">Application Number:</label>
+        <input type="text" value="{{ .Student.ApplicationNumber }}" class="w-full border rounded px-3 py-2 bg-gray-100" disabled />
+      </div>
+
+      <div>
+        <label class="block font-semibold">Date of Birth:</label>
+        <input type="text" value="{{ .Student.DOB }}" class="w-full border rounded px-3 py-2 bg-gray-100" disabled />
+      </div>
+
+      <div>
+        <label class="block font-semibold">Contact Number:</label>
+        <input type="text" name="contact_number" value="{{ .Student.ContactNumber }}" class="w-full border rounded px-3 py-2" required />
+      </div>
+
+      <div>
+        <label class="block font-semibold">Email:</label>
+        <input type="email" name="email" value="{{ .Student.Email }}" class="w-full border rounded px-3 py-2" required />
+      </div>
     </div>
 
     <div>
-      <label class="block font-semibold">Father Name:</label>
-      <input type="text" name="father_name" value="{{ .Student.FatherName }}" class="w-full border rounded px-3 py-2" required />
-    </div>
-
-    <div>
-      <label class="block font-semibold">Application Number:</label>
-      <input type="text" value="{{ .Student.ApplicationNumber }}" class="w-full border rounded px-3 py-2 bg-gray-100" disabled />
-    </div>
-
-    <div>
-      <label class="block font-semibold">Date of Birth:</label>
-      <input type="text" value="{{ .Student.DOB }}" class="w-full border rounded px-3 py-2 bg-gray-100" disabled />
-    </div>
-
-    <div>
-      <label class="block font-semibold">Contact Number:</label>
-      <input type="text" name="contact_number" value="{{ .Student.ContactNumber }}" class="w-full border rounded px-3 py-2" required />
-    </div>
-
-    <div>
-      <label class="block font-semibold">Email:</label>
-      <input type="email" name="email" value="{{ .Student.Email }}" class="w-full border rounded px-3 py-2" required />
-    </div>
-
-    <div>
-      <label class="block font-semibold">Correspondence Address:</label>
+      <label class="block font-semibold mt-4">Correspondence Address:</label>
       <textarea name="correspondence_address" rows="3" class="w-full border rounded px-3 py-2">{{ .Student.CorrespondenceAddr }}</textarea>
     </div>
 
@@ -121,7 +133,7 @@
       <textarea name="permanent_address" rows="3" class="w-full border rounded px-3 py-2">{{ .Student.PermanentAddr }}</textarea>
     </div>
 
-    <div class="grid grid-cols-2 gap-4">
+    <div class="grid grid-cols-2 gap-6 mt-6">
       <div>
         <label class="block font-semibold">Branch:</label>
         <input type="text" value="{{ .Student.Branch }}" class="w-full border rounded px-3 py-2 bg-gray-100" disabled />
@@ -144,7 +156,6 @@
           <option value="General-EWS" {{ if eq .Student.Category "General-EWS" }}selected{{ end }}>General-EWS</option>
         </select>
       </div>
-
       <div>
         <label class="block font-semibold">Sub Category:</label>
         <select name="sub_category" class="w-full border rounded px-3 py-2">
@@ -156,12 +167,10 @@
           <option value="Sports Quota" {{ if eq .Student.SubCategory "Sports Quota" }}selected{{ end }}>Sports Quota</option>
         </select>
       </div>
-
       <div>
         <label class="block font-semibold">Rank:</label>
         <input type="number" name="rank" value="{{ .Student.Rank }}" class="w-full border rounded px-3 py-2" />
       </div>
-
       <div>
         <label class="block font-semibold">Seat Quota:</label>
         <select name="seat_quota" class="w-full border rounded px-3 py-2">
@@ -169,34 +178,34 @@
           <option value="Outside Delhi" {{ if eq .Student.SeatQuota "Outside Delhi" }}selected{{ end }}>Outside Delhi</option>
         </select>
       </div>
-      <hr class="my-6 border-t" />
-        <h3 class="text-xl font-bold text-blue-800">Optional: Re-upload Documents</h3>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label class="block font-semibold">Passport Size Photo</label>
-            <input type="file" name="photo" accept="image/*" class="w-full border rounded px-3 py-2" />
-          </div>
-
-          <div>
-            <label class="block font-semibold">JEE Scorecard / CET Admit Card (PDF)</label>
-            <input type="file" name="jee_scorecard" accept="application/pdf" class="w-full border rounded px-3 py-2" />
-          </div>
-
-          <div>
-            <label class="block font-semibold">Candidate Profile (PDF)</label>
-            <input type="file" name="candidate_profile" accept="application/pdf" class="w-full border rounded px-3 py-2" />
-          </div>
-
-          <div>
-            <label class="block font-semibold">Fee Receipt / DD (PDF)</label>
-            <input type="file" name="fee_receipt" accept="application/pdf" class="w-full border rounded px-3 py-2" />
-          </div>
-        </div>
-
     </div>
 
-    <div class="text-center pt-6">
+    <hr class="my-6 border-t" />
+    <h3 class="text-xl font-bold text-blue-800"> Optional: Re-upload Documents</h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <label class="block font-semibold">Passport Size Photo</label>
+        <input type="file" name="photo" accept="image/*" class="w-full border rounded px-3 py-2" />
+      </div>
+
+      <div>
+        <label class="block font-semibold">JEE Scorecard / CET Admit Card (PDF)</label>
+        <input type="file" name="jee_scorecard" accept="application/pdf" class="w-full border rounded px-3 py-2" />
+      </div>
+
+      <div>
+        <label class="block font-semibold">Candidate Profile (PDF)</label>
+        <input type="file" name="candidate_profile" accept="application/pdf" class="w-full border rounded px-3 py-2" />
+      </div>
+
+      <div>
+        <label class="block font-semibold">Fee Receipt / DD (PDF)</label>
+        <input type="file" name="fee_receipt" accept="application/pdf" class="w-full border rounded px-3 py-2" />
+      </div>
+    </div>
+
+    <div class="text-center pt-8">
       <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 font-semibold">
         Save Changes
       </button>
@@ -204,6 +213,7 @@
   </form>
   {{ end }}
 </main>
+
 <footer class="bg-gray-900 text-white mt-16">
   <div class="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-3 gap-6">
     <div>
