@@ -11,7 +11,6 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
-	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -60,13 +59,14 @@ func SubmitHandler(db *sql.DB) http.HandlerFunc {
 			FeeReference:       r.FormValue("fee_reference"),
 			Status:             "Reported",
 		}
-
+		student.Batch = ""
+		student.Group = ""
 		var lateralInt int
-		isLE := strings.EqualFold(student.LateralEntry, "Yes")
-		if isLE {
-			student.Batch = ""
-			student.Group = ""
+		var isLE int
+		if student.LateralEntry == "Yes" {
+			isLE = 1
 		} else {
+			isLE = 0
 			student.Batch, student.Group = utils.AssignBatchAndGroup(db, student.Branch)
 		}
 
@@ -81,7 +81,7 @@ func SubmitHandler(db *sql.DB) http.HandlerFunc {
 		_, err = db.Exec(insertQuery,
 			student.ApplicationNumber, student.FullName, student.FatherName, student.DOB, student.Gender,
 			student.ContactNumber, student.Email, student.CorrespondenceAddr, student.PermanentAddr,
-			student.Branch, lateralInt, student.Category, student.SubCategory, student.Rank,
+			student.Branch, isLE, student.Category, student.SubCategory, student.Rank,
 			student.SeatQuota, student.Batch, student.Group, student.Status, 0,
 			student.FeeMode, student.FeeReference,
 		)

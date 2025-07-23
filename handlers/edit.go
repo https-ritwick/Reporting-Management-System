@@ -6,8 +6,12 @@ import (
 	"database/sql"
 	"fmt"
 	"html/template"
+	"io"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -127,6 +131,54 @@ func EditHandler(db *sql.DB) http.HandlerFunc {
 				fmt.Println("Update error:", err)
 				return
 			}
+			uploadPath := fmt.Sprintf("static/uploads/%s/edit", app)
+			os.MkdirAll(uploadPath, os.ModePerm)
+
+			fileFields := map[string]string{
+				"photo":             "photo_path",
+				"jee_scorecard":     "jee_scorecard_path",
+				"candidate_profile": "candidate_profile_path",
+				"fee_receipt":       "fee_receipt_path",
+			}
+
+			updates := []string{}
+			args := []interface{}{}
+
+			for field, col := range fileFields {
+				file, header, err := r.FormFile(field)
+				if err != nil {
+					continue // skip if not uploaded
+				}
+				defer file.Close()
+
+				ext := filepath.Ext(header.Filename)
+				filePath := fmt.Sprintf("%s/%s%s", uploadPath, field, ext)
+
+				dst, err := os.Create(filePath)
+				if err != nil {
+					log.Println("❌ Error creating file:", err)
+					continue
+				}
+				defer dst.Close()
+
+				if _, err := io.Copy(dst, file); err != nil {
+					log.Println("❌ Error saving file:", err)
+					continue
+				}
+
+				// Append to update query
+				updates = append(updates, fmt.Sprintf("%s = ?", col))
+				args = append(args, strings.ReplaceAll(filePath, "\\", "/"))
+			}
+
+			if len(updates) > 0 {
+				args = append(args, app) // For WHERE clause
+				updateQuery := "UPDATE uploads SET " + strings.Join(updates, ", ") + " WHERE application_number = ?"
+				_, err = db.Exec(updateQuery, args...)
+				if err != nil {
+					log.Println("❌ Failed to update uploads table:", err)
+				}
+			}
 
 			// Fetch batch/group/branch for email after update
 			row := db.QueryRow("SELECT full_name, branch, batch, group_name FROM students WHERE application_number = ?", app)
@@ -179,7 +231,7 @@ func EditHandler(db *sql.DB) http.HandlerFunc {
 			</html>
 			`, name, app, branch, batch, group)
 
-			err = utils.SendHTMLEmail(email, "📄 Student Profile Updated - USAR", html)
+			err = utils.SendHTMLEmail(email, "Student Profile Updated - USAR", html)
 			if err != nil {
 				log.Println("❌ Failed to send update email:", err)
 			} else {

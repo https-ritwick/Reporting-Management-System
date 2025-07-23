@@ -169,6 +169,31 @@
           <option value="Outside Delhi" {{ if eq .Student.SeatQuota "Outside Delhi" }}selected{{ end }}>Outside Delhi</option>
         </select>
       </div>
+      <hr class="my-6 border-t" />
+        <h3 class="text-xl font-bold text-blue-800">Optional: Re-upload Documents</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block font-semibold">Passport Size Photo</label>
+            <input type="file" name="photo" accept="image/*" class="w-full border rounded px-3 py-2" />
+          </div>
+
+          <div>
+            <label class="block font-semibold">JEE Scorecard / CET Admit Card (PDF)</label>
+            <input type="file" name="jee_scorecard" accept="application/pdf" class="w-full border rounded px-3 py-2" />
+          </div>
+
+          <div>
+            <label class="block font-semibold">Candidate Profile (PDF)</label>
+            <input type="file" name="candidate_profile" accept="application/pdf" class="w-full border rounded px-3 py-2" />
+          </div>
+
+          <div>
+            <label class="block font-semibold">Fee Receipt / DD (PDF)</label>
+            <input type="file" name="fee_receipt" accept="application/pdf" class="w-full border rounded px-3 py-2" />
+          </div>
+        </div>
+
     </div>
 
     <div class="text-center pt-6">
