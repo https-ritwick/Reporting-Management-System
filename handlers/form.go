@@ -85,7 +85,7 @@ func SubmitHandler(db *sql.DB) http.HandlerFunc {
 			student.FeeMode, student.FeeReference,
 		)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Database error: %v", err), http.StatusInternalServerError)
+			RenderErrorPage(w, "Student not found. Please check your application number.", err)
 			return
 		}
 

@@ -47,7 +47,7 @@ func UpgradeHandler(db *sql.DB) http.HandlerFunc {
 		query := `SELECT  dob, branch, full_name, last_upgrade_at,lateral_entry, email FROM students WHERE application_number = ?`
 		err := db.QueryRow(query, appNum).Scan(&dbDOB, &dbPrevBranch, &fullName, &lastUpgradeAt, &lateralEntry, &email)
 		if err != nil {
-			http.Error(w, "Student not found", http.StatusNotFound)
+			RenderErrorPage(w, "Student not found. Please check your details.", err)
 			return
 		}
 
@@ -62,7 +62,7 @@ func UpgradeHandler(db *sql.DB) http.HandlerFunc {
 		fmt.Println(prevBranch, dbPrevBranch)
 		// Compare DOB and Previous Branch
 		if !parsedDOB.Equal(dbDOB) || prevBranch != dbPrevBranch {
-			http.Error(w, "DOB or Previous Branch does not match our records", http.StatusForbidden)
+			RenderErrorPage(w, "DOB or Previous Branch does not match our records", nil)
 			return
 		}
 
@@ -70,7 +70,7 @@ func UpgradeHandler(db *sql.DB) http.HandlerFunc {
 		if lastUpgradeAt.Valid {
 			duration := time.Since(lastUpgradeAt.Time)
 			if duration.Hours() < 72 {
-				http.Error(w, "Upgrade not allowed in this Round of Counselling", http.StatusForbidden)
+				RenderErrorPage(w, "Upgrade not allowed in this Round of Counselling", nil)
 				return
 			}
 		}

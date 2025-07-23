@@ -127,7 +127,7 @@ func EditHandler(db *sql.DB) http.HandlerFunc {
 			`, fullName, fatherName, contact, email, corrAddr, permAddr, category, subCat, rank, quota, app)
 
 			if err != nil {
-				http.Error(w, "Failed to update record", http.StatusInternalServerError)
+				RenderErrorPage(w, "Failed to update record", err)
 				fmt.Println("Update error:", err)
 				return
 			}
