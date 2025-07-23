@@ -1,117 +1,357 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>University Admissions Portal</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-100 text-gray-900">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>USAR Welcome Page</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&family=Playfair+Display:wght@500;600;700&display=swap"
+    />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class'
+      }
+    </script>
+    <style>
+      body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f8f9fb;
+        color: #111418;
+        margin: 0;
+        padding: 0;
+      }
+      h1, h2, h3, h4 {
+          font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-style: normal;
+      }
+      .nav-link {
+        position: relative;
+      }
+      .nav-link::after {
+        content: "";
+        position: absolute;
+        bottom: -4px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background-color: #0c7ff2;
+        transition: width 0.3s ease-in-out;
+      }
+      .nav-link:hover::after {
+        width: 100%;
+      }
+      .typing {
+        border-right: 2px solid #fff;
+        white-space: nowrap;
+        overflow: hidden;
+        animation: typing 6s steps(40, end), blink 0.75s step-end infinite;
+      }
+      @keyframes typing {
+        from { width: 0; }
+        to { width: 100%; }
+      }
+      @keyframes blink {
+        from, to { border-color: transparent; }
+        50% { border-color: white; }
+      }
+      .container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+      }
+      .card {
+        position: relative;
+        width: 300px;
+        height: 200px;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: transform 0.3s;
+      }
+      .card:hover {
+        transform: scale(1.05);
+      }
+      .card img.background {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: brightness(0.5);
+      }
+      .card-content {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        padding: 1rem;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+        color: white;
+      }
+      .card-content h3,
+      .card-content p,
+      .card-content a {
+        margin-top: 0.5rem;
+      }
+      .card-content button {
+        --color: #0c7ff2;
+        font-family: inherit;
+        display: inline-block;
+        padding: 0.5rem 1.25rem;
+        margin-top: 0.5rem;
+        background: transparent;
+        border: 2px solid var(--color);
+        color: var(--color);
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: 0.5s;
+        position: relative;
+        overflow: hidden;
+      }
+      .card-content button:hover {
+        color: #fff;
+      }
+      .card-content button:before {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        background: var(--color);
+        height: 150px;
+        width: 200px;
+        border-radius: 50%;
+        top: 100%;
+        left: 100%;
+        transition: all 0.7s;
+      }
+      .card-content button:hover:before {
+        top: -30px;
+        left: -30px;
+      }
+      section h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #111418;
+        margin-bottom: 1.5rem;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body class="bg-white dark:bg-gray-900 dark:text-white">
+    <div class="flex flex-col min-h-screen overflow-x-hidden">
 
-  <!-- Navbar -->
-  <nav class="bg-white shadow-md border-b border-blue-300">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-      <div>
-        <h1 class="text-2xl font-semibold text-blue-700">University Admissions Portal</h1>
-        <p class="text-sm text-gray-600">Welcome to Admission Portal 2025-26</p>
+      <!-- Header Section -->
+      <header class="flex flex-wrap items-center justify-between border-b border-[#f0f2f5] px-6 py-4 shadow-sm sticky top-0 bg-white z-50">
+        <div class="flex items-center gap-4 text-[#111418]">
+          <img src="/static/img/Logo/GGSIU_logo.svg.png" alt="GGSIU Logo" class="h-14 w-auto" />
+          <div>
+            <h2 class="text-lg sm:text-xl font-bold">University School of Automation & Robotics</h2>
+            <p class="text-sm text-gray-600">Guru Gobind Singh Indraprastha University, East Delhi Campus</p>
+          </div>
+        </div>
+        <div class="flex flex-col sm:flex-row sm:items-center gap-6 mt-4 sm:mt-0">
+          <nav class="flex flex-wrap justify-center items-center gap-4 text-sm font-medium">
+            <a href="#" class="nav-link text-[#111418]">Programs</a>
+            <a href="#" class="nav-link text-[#111418]">Syllabus</a>
+            <a href="#" class="nav-link text-[#111418]">Clubs / Societies</a>
+            <a href="#" class="nav-link text-[#111418]">Student Council</a>
+            <a href="#" class="nav-link text-[#111418]">Gallery</a>
+            <a href="#" class="nav-link text-[#111418]">Login</a>
+          </nav>
+          <img src="/static/img/Logo/new_logo_withoutbg.png" alt="USAR Logo" class="h-12 w-auto" />
+        </div>
+      </header>
+
+      <!-- Hero Section -->
+      <section class="flex flex-col justify-center items-center text-white text-center gap-4 px-4 h-[calc(100vw*0.5625)] max-h-[900px] bg-cover bg-center" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/static/img/hero.jpg');">
+        <h1 class="text-5xl font-black drop-shadow-sm typing">Welcome to University School of Automation & Robotics</h1>
+        <p class="text-lg max-w-2xl drop-shadow-sm">Explore our academic programs, research, and vibrant student life at<br> East Delhi Campus, GGSIPU.</p>
+        <a href="/form" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold transition shadow-md">Apply Now</a>
+      </section>
+
+      <!-- About Section -->
+       
+      <section class="max-w-5xl mx-auto px-4 py-10">
+        <h2 class="text-2xl font-bold text-[#111418] mb-4 text-center">About Us</h2>
+        <p class="text-base text-[#111418] mb-4">
+          USAR is committed to excellence in technical education and innovation. The purpose of the school is to initiate continuous interaction with the industry, sharing the industry experiences, understanding industry needs and providing the required support to the corporate world, as well as opportunities to students to work in alliance with Industry. <br> <br>
+        The need of the time is to keep pace with technological advancements, teaching methodology and research, in the light of fast changing scenario and business environment globally. As India marches into the Fourth Industrial Revolution (IR4.0), the university is all set to respond as fast as possible by establishing the University School of Automation & Robotics covering the emerging areas like machine learning, data science, artificial intelligence, industrial IOT, etc. USAR has set vision to produce world-class engineers who will cater to the growing technological needs of the nation.
+
+Technology has changed the lives of people globally with applications apparent in every walk of life. It empowers the younger generation with knowledge of recent advancements in this sector and provides them with a platform to work in various industries. Synergy between different technologies is being used to solve problems more efficiently and rigorously than ever before. We are slowly entering a stage where integrated technologies will become routine to most consumers. To meet the overwhelming demand for improvement in design, operation, maintenance and efficiency, engineering has to rise as a field to move consumers into a new era of technology. <br> <br>
+
+The school offers the following programs: B.Tech-M.Tech (Dual Degree) in Artificial Intelligence & Data Science / Artificial Intelligence & Machine Learning / Industrial Internet of Things / Automation & Robotics, Ph.D. , PG-Diploma in Cyber Security, Cyber Disaster & Blockchain Technology
+        </p>
+        <a href="http://ipu.ac.in/usar/" class="inline-block bg-[#f0f2f5] hover:bg-gray-200 px-4 py-2 rounded-md font-bold text-sm">Read More</a>
+      </section>
+
+      <!-- Notices Section -->
+      <section class="max-w-7xl mx-auto px-4 pb-12">
+        <h2 class="text-2xl font-bold text-[#111418] mb-4 text-center">Public Notices - USAR </h2>
+        <div id="notices-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></div>
+        <p id="notice-error" class="text-red-500 mt-4 hidden">Failed to load notices.</p>
+      </section>
+
+      <!-- Gallery Highlights Section -->
+      <section class="py-12 bg-white">
+        
+        <div class="max-w-7xl mx-auto px-4">
+          <h2 class="text-2xl font-bold text-[#111418] mb-4 text-center">Campus Highlights...</h2>
+          <div class="container">
+            <div class="card">
+        <img class="background" src="https://lh3.googleusercontent.com/pw/AP1GczPA0WLwowgidPa5ldS_UKXV3Zx8qbfqgffe8iP1xqKOvgaDUm0PvhFtc7rEtkECd7Pghpn41uiAwERZoaoBuhKzRbDI0rSFfwOGGfZKyziu_xauYPS6BmTQOjlgaFXdRuUqomto1IBj-3PJQ2aT8KnuQA=w1316-h878-s-no-gm?authuser=0">
+        <div class="card-content">
+          <h3 class="title">Afsana Farewell</h3> <br>
+          <h5 class="title">25th April 2025</h5>
+          &nbsp &nbsp &nbsp
+            <a href="https://photos.app.goo.gl/1v8QcdjayatBUnuR8"><button> Photograph</button></a>
+        </div>
+        <div class="backdrop"></div>
       </div>
-      <img src="/resources/logo.png" alt="University Logo" class="h-12">
+      <div class="card">
+        <img class="background" src="/static/img/freshers.jpg">
+        <div class="card-content">
+          <h3 class="title">Mulaqaat - Freshers' Party</h3> <br>
+          <h5 class="title">6th Sept 2024</h5>
+          &nbsp &nbsp &nbsp
+            <a href="https://lh6.googleusercontent.com/z0boS8JxS8XcxLlp4wcmHaS-hUVq_TNjgDRmgXzAZkn4uwSQgl_--tEe4PU5_1imCYqtWs9F96UX_G1klVK3PFQMWKgYr2fbmned5jlvXPyaXrmG17MY6fJWo3VbPjMytjU7GnxXIvQ_twITblEJ1EKkwX5ANJ5n423iCVc08yv5G2f5p73GKQ=w1280"><button> Photograph</button></a>
+        </div>
+        <div class="backdrop"></div>
+      </div>
+      <div class="card">
+        <img class="background" src="/static/img/navratri.jpg">
+        <div class="card-content">
+          <h3 class="title">Navrarti Celebrations</h3> <br>
+          &nbsp &nbsp &nbsp
+            <a href="https://photos.app.goo.gl/EXu8tWEbysJy2D8T6"><button> Photograph</button></a>
+        </div>
+        <div class="backdrop"></div>
+      </div>
+      
+           <div class="card">
+           <img class="background" src="https://pbs.twimg.com/media/GMWzJbraEAAorQQ?format=jpg&name=4096x4096" alt="">
+            
+        <div class="card-content">
+          <h3 class="title">Elysian 2.0 & Synesthesia 1.0</h3> 
+           &nbsp &nbsp &nbsp
+            <a href="https://drive.google.com/drive/folders/1n8oSfc1jshJKm1ahQ-WYNxGZel7y52rJ?usp=drive_link"><button>Photos/Videos</button></a>
+        </div>
+        
+        <div class="backdrop"></div>
+      </div>
+      
+
+
+      <div class="card">
+        <img class="background" src="https://images.collegedunia.com/public/college_data/images/campusimage/170133406913.JPG" alt="">
+
+        <div class="card-content">
+          <h3 class="title">Societies/Student Chapter</h3>
+          &nbsp &nbsp &nbsp
+          <a href="https://sites.google.com/view/ggsipuedc/students/societiesstudent-chapters"><button>Know More</button></a>
+        </div>
+        <div class="backdrop"></div>
+      </div>
+
+      <div class="card">
+        <img class="background" src="https://pbs.twimg.com/media/GMVRXF3awAAJbS5?format=jpg&name=4096x4096" alt="">
+
+        <div class="card-content">
+          <h3 class="title">Photo Gallery</h3>
+          &nbsp &nbsp &nbsp
+          <a href="https://sites.google.com/view/ggsipuedc/campus-life/photo-gallery"><button>View</button></a>
+        </div>
+        <div class="backdrop"></div>
+      </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Footer -->
     </div>
-  </nav>
-
-  <!-- Main Section -->
-  <main class="max-w-7xl mx-auto px-4 mt-6 grid md:grid-cols-3 gap-8">
-    <!-- Text Marquee / Scrolling Notice Bar -->
-<div class="bg-blue-700 text-white py-2 px-4 overflow-hidden whitespace-nowrap">
-  <marquee behavior="scroll" direction="left" scrollamount="6" class="text-sm font-medium">
-    🎓 Registration Open for UG Admissions 2025-26 | 📝 Correction Window Active until 12 July | 📢 New Notification Released for Counselling Schedule
-  </marquee>
-</div>
-
-<!-- Card Container -->
-<div class="max-w-7xl mx-auto mt-10 grid md:grid-cols-2 gap-6 px-4">
-
-  <!-- About USAR Card -->
-  <div class="relative bg-white shadow-md border rounded p-6">
-    <div class="absolute -top-4 left-0 bg-blue-900 text-white px-4 py-1 text-sm font-bold rounded-tr rounded-br shadow-md">
-      ABOUT USAR
-    </div>
-    <p class="text-gray-700 mt-6">
-      The University School of Automation and Robotics (USAR) is a premier institute under GGSIPU offering specialized courses in AI, Data Science, and Robotics...
-    </p>
-    <p class="text-gray-700 mt-3">
-      USAR fosters innovation, research, and interdisciplinary learning to prepare students for emerging technologies.
-    </p>
-    <a href="/resources/about_usar.pdf" target="_blank" class="inline-block mt-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm font-semibold">
-      READ MORE →
-    </a>
-  </div>
-
-  <!-- Latest @ USAR Card -->
-  <div class="relative bg-white shadow-md border rounded p-6">
-    <div class="absolute -top-4 left-0 bg-blue-900 text-white px-4 py-1 text-sm font-bold rounded-tr rounded-br shadow-md">
-      LATEST @ USAR
-    </div>
-    <ul class="list-disc list-inside text-sm mt-6 space-y-2 text-gray-800">
-      <li>
-        Declaration of B.Tech 2nd Semester Results (June 2025). 
-        <a href="/notices/result_notice.pdf" target="_blank" class="text-orange-600 font-semibold hover:underline ml-1">Read More</a> 
-        <span class="text-green-500 font-bold ml-1">NEW</span>
-      </li>
-      <li>
-        Revised Academic Calendar 2025–26 Released. 
-        <a href="/notices/calendar.pdf" target="_blank" class="text-orange-600 font-semibold hover:underline ml-1">Read More</a> 
-        <span class="text-green-500 font-bold ml-1">NEW</span>
-      </li>
-      <li>
-        Final Round Counselling Schedule – B.Tech Admissions. 
-        <a href="/notices/counselling_schedule.pdf" target="_blank" class="bg-green-600 text-white px-3 py-1 ml-2 rounded text-xs font-bold hover:bg-green-700">ARCHIVE</a>
-      </li>
-    </ul>
-  </div>
-
-</div>
-
+    <footer class="bg-[#111418] text-white text-sm pt-10 pb-6 px-6">
+  <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
     
-    <!-- Left Panel -->
-    <section class="md:col-span-2">
-      <h2 class="text-xl font-bold mb-4">Important Information Documents for Admissions 2025-26</h2>
-      <ul class="space-y-3">
-        <li><a href="#" class="text-blue-600 hover:underline">User Guide for Registration Process (Step by Step Guide of Admission Form)</a></li>
-        <li><a href="#" class="text-blue-600 hover:underline">Admission Advertisement for Academic Year 2025–26</a></li>
-        <li><a href="#" class="text-blue-600 hover:underline">Admission Advertisement for Affiliation Colleges for Academic Year 2025–26</a></li>
-        <li><a href="#" class="text-blue-600 hover:underline">Admission Calendar</a></li>
-        <li><a href="#" class="text-blue-600 hover:underline">Programme Details including Seat Intake, Tuition Fees, Eligibility, Mode of Admission, NFAT Syllabus</a></li>
-        <li><a href="#" class="text-blue-600 hover:underline">Seat Reservation and Supernumerary Seats for Admissions 2025–26</a></li>
-        <li><a href="#" class="text-blue-600 hover:underline">Detailed Syllabus for Management Studies Entrance (MBA/BBA-MBA)</a></li>
+    <!-- Campus Location -->
+    <div>
+      <h4 class="text-lg font-semibold mb-2">Campus Address</h4>
+      <p>
+        University School of Automation & Robotics<br>
+        GGSIPU East Delhi Campus<br>
+        Surajmal Vihar, Delhi - 110092
+      </p>
+    </div>
+
+    <!-- Quick Links -->
+    <div>
+      <h4 class="text-lg font-semibold mb-2">Quick Links</h4>
+      <ul class="space-y-1">
+        <li><a href="/" class="hover:underline">Home</a></li>
+        <li><a href="/form" class="hover:underline">Student Registration Form</a></li>
+        <li><a href="/upgrade" class="hover:underline">Branch Upgradation Form </a></li>
+        <li><a href="/edit" class="hover:underline">Edit Student Details Form</a></li>
+        <li><a href="/view" class="hover:underline">View Students</a></li>
+        <li><a href="https://sites.google.com/view/ggsipuedc/students/hostels" class="hover:underline">Hostels</a></li>
+        <li><a href="/team" class="hover:underline">Website Team</a></li>
+        <li><a href="https://sites.google.com/view/ggsipuedc" class="hover:underline">GGSIPU EDC Website</a></li>
       </ul>
-    </section>
+    </div>
 
-    <!-- Right Panel -->
-    <aside>
-      <h2 class="text-xl font-bold mb-4">Notifications</h2>
-      <div class="bg-white rounded-lg shadow p-4 space-y-4 border">
-        <div>
-          <p class="text-sm text-gray-500">10 May 2025</p>
-          <a href="#" class="text-blue-600 hover:underline">Important Notice regarding Admission Application Form Correction</a>
-        </div>
-        <div>
-          <p class="text-sm text-gray-500">01 May 2025</p>
-          <a href="#" class="text-blue-600 hover:underline">Admission Advertisement for Affiliation Colleges</a>
-        </div>
-        <div>
-          <p class="text-sm text-gray-500">17 Mar 2025</p>
-          <a href="#" class="text-blue-600 hover:underline">Admission Advertisement for Academic Year 2025-2026</a>
-        </div>
+    <!-- Contact and Social -->
+    <div>
+      <h4 class="text-lg font-semibold mb-2">Contact</h4>
+      <p>Email: <a href="mailto:admin@ggsipu.ac.in" class="underline">admin@ggsipu.ac.in</a></p>
+       <div class="flex space-x-4 mt-4">
+        <a href="https://www.instagram.com/ggsipuedc/" class="bg-white text-gray-900 hover:bg-blue-100 p-2 rounded-full" aria-label="Instagram">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M7.75 2h8.5C19.55 2 22 4.45 22 7.75v8.5C22 19.55 19.55 22 16.25 22h-8.5C4.45 22 2 19.55 2 16.25v-8.5C2 4.45 4.45 2 7.75 2zm0 2C5.68 4 4 5.68 4 7.75v8.5C4 18.32 5.68 20 7.75 20h8.5c2.07 0 3.75-1.68 3.75-3.75v-8.5C20 5.68 18.32 4 16.25 4h-8.5zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm4.25-2a.75.75 0 1 1 0 1.5.75.75 0 0 1 0-1.5z"/></svg>
+        </a>
+        <a href="https://x.com/GGSIPU_EDC" class="bg-white text-gray-900 hover:bg-blue-100 p-2 rounded-full" aria-label="X">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4v16h16V4zM5.5 5.5h13v13h-13v-13zm3.2 2.5 3.3 4.5-3.3 4.5h1.7l2.5-3.4 2.5 3.4h1.7l-3.3-4.5 3.3-4.5h-1.7l-2.5 3.4-2.5-3.4H8.7z"/></svg>
+        </a>
+        <a href="https://www.linkedin.com/in/ggsipuedc/" class="bg-white text-gray-900 hover:bg-blue-100 p-2 rounded-full" aria-label="LinkedIn">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452H17.4v-5.569c0-1.327-.024-3.037-1.85-3.037-1.85 0-2.134 1.445-2.134 2.939v5.667h-3.051V9h2.932v1.561h.042c.408-.775 1.407-1.591 2.896-1.591 3.096 0 3.668 2.038 3.668 4.689v6.793zM5.337 7.433c-.985 0-1.783-.798-1.783-1.783 0-.986.798-1.784 1.783-1.784.986 0 1.784.798 1.784 1.784 0 .985-.798 1.783-1.784 1.783zM6.814 20.452H3.861V9h2.953v11.452z"/></svg>
+        </a>
       </div>
-    </aside>
+    </div>
+  </div>
 
-  </main>
+  <div class="text-center border-t border-gray-700 pt-4">
+    <p>© 2025 University School of Automation & Robotics, GGSIPU</p>
+  </div>
 
-  <!-- Footer -->
-  <footer class="bg-white mt-12 border-t py-4 text-center text-sm text-gray-600">
-    Provided and maintained by University School of Automation & Robotics, GGSIPU.
-  </footer>
+  <!-- Font Awesome for icons -->
+  <script src="https://kit.fontawesome.com/5b5a32fce9.js" crossorigin="anonymous"></script>
+</footer>
 
-</body>
+
+    <!-- Script to fetch notices -->
+    <script>
+      async function loadNotices() {
+        try {
+          const res = await fetch("/api/notices");
+          if (!res.ok) throw new Error("Network error");
+          const notices = await res.json();
+          const container = document.getElementById("notices-container");
+          if (notices.length === 0) {
+            container.innerHTML = '<p class="text-gray-600">No notices available right now.</p>';
+            return;
+          }
+          notices.forEach(n => {
+            container.innerHTML += `
+              <a href="${n.link}" target="_blank" class="block bg-white p-4 rounded-lg border border-blue-200 shadow hover:shadow-md transition">
+                <h3 class="text-lg font-semibold text-blue-800 mb-1">${n.title}</h3>
+                <p class="text-sm text-gray-600 mb-2">${n.description}</p>
+                <p class="text-xs text-gray-400"> ${new Date(n.created_at).toLocaleDateString()}</p>
+              </a>`;
+          });
+        } catch (err) {
+          document.getElementById("notice-error").classList.remove("hidden");
+        }
+      }
+      document.addEventListener("DOMContentLoaded", loadNotices);
+    </script>
+  </body>
 </html>

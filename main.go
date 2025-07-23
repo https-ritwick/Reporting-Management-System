@@ -29,6 +29,11 @@ func main() {
 		tmpl := template.Must(template.ParseFiles("templates/faq.html"))
 		tmpl.Execute(w, nil)
 	})
+	http.HandleFunc("/api/notice", handlers.MainGetNoticesHandler(db.Conn))
+	http.HandleFunc("/manage-notices", handlers.ManageNoticesPage(db.Conn))
+	http.HandleFunc("/api/notices", handlers.GetNoticesHandler(db.Conn))
+	http.HandleFunc("/add-notice", handlers.AddNoticeHandler(db.Conn))
+	http.HandleFunc("/delete-notice", handlers.DeleteNoticeHandler(db.Conn))
 
 	http.HandleFunc("/submit", handlers.SubmitHandler(db.Conn))
 	http.HandleFunc("/team", handlers.AboutHandler())
