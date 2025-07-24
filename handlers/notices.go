@@ -16,6 +16,16 @@ type Notice struct {
 
 func MainGetNoticesHandler(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// Set headers to allow cross-origin fetch
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Content-Type", "application/json")
+
+		// Only allow GET method
+		if r.Method != http.MethodGet {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
 		rows, err := db.Query("SELECT id, title, description, link, created_at FROM notices ORDER BY created_at DESC")
 		if err != nil {
 			http.Error(w, "Database query failed", http.StatusInternalServerError)
@@ -31,7 +41,6 @@ func MainGetNoticesHandler(db *sql.DB) http.HandlerFunc {
 			}
 		}
 
-		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(notices)
 	}
 }

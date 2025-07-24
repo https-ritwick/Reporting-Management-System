@@ -29,9 +29,9 @@ func main() {
 		tmpl := template.Must(template.ParseFiles("templates/faq.html"))
 		tmpl.Execute(w, nil)
 	})
-	http.HandleFunc("/api/notice", middleware.AuthMiddleware(handlers.MainGetNoticesHandler(db.Conn)))
+	http.HandleFunc("/api/notice", handlers.MainGetNoticesHandler(db.Conn))
 	http.HandleFunc("/manage-notices", middleware.AuthMiddleware(handlers.ManageNoticesPage(db.Conn)))
-	http.HandleFunc("/api/notices", middleware.AuthMiddleware(handlers.GetNoticesHandler(db.Conn)))
+	http.HandleFunc("/api/notices", handlers.GetNoticesHandler(db.Conn))
 	http.HandleFunc("/add-notice", middleware.AuthMiddleware(handlers.AddNoticeHandler(db.Conn)))
 	http.HandleFunc("/delete-notice", middleware.AuthMiddleware(handlers.DeleteNoticeHandler(db.Conn)))
 
