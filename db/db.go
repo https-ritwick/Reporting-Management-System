@@ -4,36 +4,38 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"os"
 	"path/filepath"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/joho/godotenv"
 )
 
 var Conn *sql.DB
 
 func Init() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("❌ Error loading .env file")
-	}
-	fmt.Println("Using .env from:", filepath.Join(".", ".env"))
-	fmt.Println("DB_USER:", os.Getenv("DB_USER"))
-	fmt.Println("DB_PASS:", os.Getenv("DB_PASS"))
-	fmt.Println("DB_HOST:", os.Getenv("DB_HOST"))
-	fmt.Println("DB_PORT:", os.Getenv("DB_PORT"))
-	fmt.Println("DB_NAME:", os.Getenv("DB_NAME"))
 
+	fmt.Println("✅ Using env from:", filepath.Join(".", ".env"))
+
+	// Read from actual .env
+	dbUser := "root"
+	dbPass := "123456"
+	dbHost := "127.0.0.1"
+	dbPort := "3306"
+	dbName := "batch"
+
+	// Print to confirm
+	fmt.Println("DB_USER:", dbUser)
+	fmt.Println("DB_PASS:", dbPass)
+	fmt.Println("DB_HOST:", dbHost)
+	fmt.Println("DB_PORT:", dbPort)
+	fmt.Println("DB_NAME:", dbName)
+
+	// Build DSN correctly
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true",
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_PASS"),
-		os.Getenv("DB_HOST"),
-		os.Getenv("DB_PORT"),
-		os.Getenv("DB_NAME"),
+		dbUser, dbPass, dbHost, dbPort, dbName,
 	)
 
 	fmt.Println("DSN:", dsn)
+	var err error
 	Conn, err = sql.Open("mysql", dsn)
 	if err != nil {
 		log.Fatalf("DB connection error: %v", err)

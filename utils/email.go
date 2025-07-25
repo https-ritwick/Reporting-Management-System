@@ -6,6 +6,13 @@ import (
 	"os"
 )
 
+var (
+	SMTP_HOST = "smtp.gmail.com"
+	SMTP_PORT = "587"
+	SMTP_USER = "ritwickjohari@gmail.com"
+	SMTP_PASS = "skhb mcjz wfwn zcaz"
+)
+
 func SendHTMLEmail(to string, subject string, htmlBody string) error {
 	from := os.Getenv("SMTP_USER")
 	password := os.Getenv("SMTP_PASS")
