@@ -4,24 +4,36 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 )
 
 var Conn *sql.DB
 
 func Init() {
-	// Hardcoded for now — you can externalize later if needed
-	dbUser := "root"
-	dbPass := "123456"
-	dbHost := "127.0.0.1"
-	dbPort := "3306"
-	dbName := "batch"
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("❌ Error loading .env file")
+	}
+	fmt.Println("Using .env from:", filepath.Join(".", ".env"))
+	fmt.Println("DB_USER:", os.Getenv("DB_USER"))
+	fmt.Println("DB_PASS:", os.Getenv("DB_PASS"))
+	fmt.Println("DB_HOST:", os.Getenv("DB_HOST"))
+	fmt.Println("DB_PORT:", os.Getenv("DB_PORT"))
+	fmt.Println("DB_NAME:", os.Getenv("DB_NAME"))
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true",
-		dbUser, dbPass, dbHost, dbPort, dbName)
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASS"),
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_NAME"),
+	)
 
-	var err error
+	fmt.Println("DSN:", dsn)
 	Conn, err = sql.Open("mysql", dsn)
 	if err != nil {
 		log.Fatalf("DB connection error: %v", err)
