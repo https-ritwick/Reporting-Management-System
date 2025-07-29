@@ -3,21 +3,20 @@ package utils
 import (
 	"fmt"
 	"net/smtp"
-	"os"
 )
 
 var (
 	SMTP_HOST = "smtp.gmail.com"
 	SMTP_PORT = "587"
-	SMTP_USER = "ritwickjohari@gmail.com"
-	SMTP_PASS = "skhb mcjz wfwn zcaz"
+	SMTP_USER = "ritwickbackup10@gmail.com"
+	SMTP_PASS = "xtug cgkb lgbo fihn"
 )
 
 func SendHTMLEmail(to string, subject string, htmlBody string) error {
-	from := os.Getenv("SMTP_USER")
-	password := os.Getenv("SMTP_PASS")
-	host := os.Getenv("SMTP_HOST")
-	port := os.Getenv("SMTP_PORT")
+	from := SMTP_USER
+	password := SMTP_PASS
+	host := SMTP_HOST
+	port := SMTP_PORT
 
 	auth := smtp.PlainAuth("", from, password, host)
 
