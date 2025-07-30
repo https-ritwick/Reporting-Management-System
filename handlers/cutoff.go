@@ -34,7 +34,7 @@ func CutoffHandler(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		query := `SELECT exam_rank FROM students WHERE status='Reported'`
+		query := `SELECT exam_rank FROM students WHERE status = 'Reported' AND lateral_entry = 0`
 		args := []interface{}{}
 
 		if req.Branch != "All" {

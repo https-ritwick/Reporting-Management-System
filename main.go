@@ -14,9 +14,6 @@ func main() {
 	// Initialize DB connection
 	db.Init()
 
-	// ---------------------------
-	// Public Routes
-	// ---------------------------
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		tmpl := template.Must(template.ParseFiles("templates/home.html"))
 		tmpl.Execute(w, nil)
