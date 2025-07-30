@@ -26,7 +26,7 @@ func SubmitHandler(db *sql.DB) http.HandlerFunc {
 
 		log.Println("🔍 Parsing multipart form")
 		//fmt.Fprintln(w, "🔍 Parsing multipart form")
-		err := r.ParseMultipartForm(20 << 20) // 20MB
+		err := r.ParseMultipartForm(100 << 20) // 20MB
 		if err != nil {
 			log.Println("❌ Error parsing form:", err)
 			http.Error(w, "Error parsing form", http.StatusBadRequest)
@@ -215,7 +215,7 @@ func SubmitHandler(db *sql.DB) http.HandlerFunc {
 					<p style="margin-top: 30px;">Regards,<br><strong>USAR Student Cell</strong><br>GGSIPU</p>
 				</td>
 				</tr>
-			</table>S
+			</table>
 			</body>
 			</html>
 		`, student.FullName, student.ApplicationNumber, student.Branch, batchDisplay, groupDisplay)

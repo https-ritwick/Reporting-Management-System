@@ -301,23 +301,53 @@ func ResendEmailHandler(db *sql.DB) http.HandlerFunc {
 
 		subject := " Your Batch and Group Allotment | USAR"
 
-		htmlBody := fmt.Sprintf(`
+		html := fmt.Sprintf(`
+			<!DOCTYPE html>
 			<html>
-			<body style="font-family:Arial,sans-serif;">
-				<p>Dear <strong>%s</strong>,</p>
-				<p>We are pleased to inform you that your <strong>Batch and Group</strong> have been successfully allotted as follows:</p>
-				<ul>
-					<li><strong>Batch:</strong> %s</li>
-					<li><strong>Group:</strong> %s</li>
-				</ul>
-				<p>Please keep this information safe for future reference.</p>
-				<br/>
-				<p>Regards,<br/><strong>Student Cell</strong><br/>University School of Automation & Robotics, GGSIPU</p>
+			<head>
+			<meta charset="UTF-8">
+			<title>Registration Confirmation</title>
+			</head>
+			<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+			<table width="100%%" style="max-width: 600px; margin: auto; background: #fff; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+				<tr style="background-color: #003366; color: white;">
+				<td style="padding: 20px;">
+					<img src="https://upload.wikimedia.org/wikipedia/en/thumb/b/b8/GGSIU_logo.svg/1200px-GGSIU_logo.svg.png" alt="IPU Logo" width="60" style="float: left;">
+					<h2 style="text-align: center; margin: 0;">University School of Automation & Robotics</h2>
+					<p style="text-align: center; margin: 0;">Guru Gobind Singh Indraprastha University, East Delhi Campus</p>
+				</td>
+				</tr>
+				<tr>
+				<td style="padding: 20px;">
+					<h3>Dear %s,</h3>
+					<p>Welcome to University School of Automation & Robotics! Thank you for registering. Your details have been successfully recorded in the system. Please find your details below:</p>
+					<table cellpadding="8" style="width: 100%%; border-collapse: collapse;">
+					<tr><td><strong>Application Number</strong></td><td>%s</td></tr>
+					<tr><td><strong>Batch</strong></td><td>%s</td></tr>
+					<tr><td><strong>Group</strong></td><td>%s</td></tr>
+					</table>
+
+					<h4><strong> Important Instructions </strong></h4>
+					<ul>
+					<li><a class="underline"href="https://docs.google.com/document/d/1B3zj4LK8akjsmjB_nNKSfM9_Tmv4j_D_00z0W6nx14k/edit?usp=sharing" target="_blank">
+      				Click Here to Read Important Instructions for Newly Admitted Candidates.
+      				</a></li>
+					<li>Please ensure all details are correct.</li>
+					<li>Please Note Down your Allotted Batch & Group for Future Reference</li>
+					<li>Students may fill out the Hostel Admission Form available on the University Website.</li>
+					<li>If any discrepancies are found, please reply to this email with the correct information.</li>
+					<li>Join the official WhatsApp Group.</li>
+					</ul>
+
+					<p style="margin-top: 30px;">Regards,<br><strong>USAR Student Cell</strong><br>GGSIPU</p>
+				</td>
+				</tr>
+			</table>
 			</body>
 			</html>
-		`, name, batch, group)
+		`, name, appNo, batch, group)
 
-		err = utils.SendHTMLEmail(email, subject, htmlBody)
+		err = utils.SendHTMLEmail(email, subject, html)
 		if err != nil {
 			http.Error(w, "❌ Failed to send email", http.StatusInternalServerError)
 			return
